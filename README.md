@@ -12,7 +12,7 @@ Garcia de Camargo (Instituto de Oceanografia, FURG).
 Direto do GitHub, no R:
 
 ```r
-shiny::runGitHub("polytiiks", "mauricio-camargo")
+shiny::runGitHub("PolyTIIKS", "mauricio-camargo")
 ```
 
 Ou baixe a pasta e rode localmente:
