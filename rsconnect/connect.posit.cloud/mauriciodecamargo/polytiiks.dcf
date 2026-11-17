@@ -1,0 +1,12 @@
+name: polytiiks
+title: PolyTIIKS
+username: mauriciodecamargo
+account: mauriciodecamargo
+server: connect.posit.cloud
+hostUrl: https://api.connect.posit.cloud/v1
+appId: 01a1e783-8f1a-09cf-1ce5-562f99e30207
+bundleId:
+url: https://connect.posit.cloud/mauriciodecamargo/content/01a1e783-8f1a-09cf-1ce5-562f99e30207
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
