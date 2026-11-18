@@ -1,4 +1,4 @@
-# PolyTIIKS: chave interativa de Lumbrineridae da Bacia de Pelotas
+# PolyTIIKS: chave x interativa de Lumbrineridae da Bacia de Pelotas
 
 Chave de identificação interativa, de múltiplo acesso, para os Lumbrineridae
 (Annelida, Polychaeta) registrados na Bacia de Pelotas, inspirada no Intkey (sistema
