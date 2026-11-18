@@ -1,5 +1,5 @@
 # =====================================================================
-# Chave interativa de Lumbrineridae da Bacia de Pelotas
+# Chave interativa x de Lumbrineridae da Bacia de Pelotas
 # R-base + pacote shiny.
 # Para rodar: deixe este arquivo na mesma pasta que os quatro arquivos de
 # dados e use shiny::runApp("caminho/da/pasta").
