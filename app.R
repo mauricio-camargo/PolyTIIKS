@@ -5,7 +5,7 @@
 # dados e use shiny::runApp("caminho/da/pasta").
 #   matriz_lumbrineridae.csv  caracteres x táxons
 #   taxons.csv                um táxon por linha: número no WoRMS, figura
-#                             (em www/taxons), legenda e descrição
+#                             (em www/taxons), legenda, descrição e aviso
 #   glossario.csv             um verbete por caráter
 #   pranchas.csv              figuras do glossário, com créditos
 # =====================================================================
@@ -514,6 +514,9 @@ server <- function(input, output, session) {
     }
     tagList(
       h3(HTML(nome_italico(input$taxon)), tags$small(tax$autoridade[k])),
+      # aviso (coluna "aviso"), ex.: figura de outra espécie do gênero
+      if (nzchar(tax$aviso[k])) p(class = "glo-atencao", strong("Atenção: "),
+                                  HTML(formatar_ficha(tax$aviso[k]))),
       figura,
       h4("Descrição"),
       div(class = "ficha-texto", p(HTML(formatar_ficha(tax$descricao[k]))))
