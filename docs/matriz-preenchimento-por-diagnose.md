@@ -58,8 +58,8 @@ separa "cônico" de "cônico alongado" sem medida definida. Convém conferir con
 ## Células preenchidas pelas descrições das espécies (21)
 
 Aprovadas por Mauricio em 16/11/2026, a partir de Camargo & Lana (1995a, b),
-Orensanz (1990) e Hartman (1965). Hartman & Fauchald (1971) não pôde ser usado: o PDF
-disponível termina na p. 72, antes da seção de Lumbrineridae.
+Orensanz (1990) e Hartman (1965). Hartman & Fauchald (1971) não foram usados nesta etapa,
+porque o PDF disponível terminava na p. 72; ver a correção de 19/11/2026.
 
 **Pelo texto (11)**
 
@@ -108,6 +108,21 @@ exemplo, os lobos pós-setais dos setígeros posteriores são alongados (Oug 201
 | *Augeneria tentaculata* | antenas ou papilas nucais | 3 | ausentes/1/2/3 | Orensanz 1990, p. 94: de 0 a 3 (média 2,38; n = 26), muitas vezes escondidas sob o peristômio |
 | *Lysarete brasiliensis* | número de pares de maxilas | 6 | 5/6 | seis pares em Carrera-Parra 2006; cinco em Orensanz 1990; MI-MIV mais um par de placas sub-retangulares em Camargo & Lana 1995a |
 
+## Correção de 19/11/2026 (1)
+
+| Táxon | Caráter | Antes | Depois | Fonte |
+|---|---|---|---|---|
+| *Scoletoma atlantica* | MIII dentição | bidentada | unidentada/bidentada | Hartman & Fauchald 1971, p. 82: MIII com um dente; Camargo & Lana 1995b: bidentada, mas com o dente distal "apenas insinuado e arredondado" |
+
+Aprovada por Mauricio. Com o dente distal tão reduzido, quem examina o material pode
+contar um só dente, e a chave não deve eliminar a espécie por isso.
+
+Hartman & Fauchald (1971, pp. 81-87) foram lidos por inteiro na parte de Lumbrineridae.
+Para *Ninoe gayheadia* e *Lumbrineris latreilli* trazem só registros e distribuição. Para
+*S. atlantica* confirmam prostômio cônico, acículas amarelas, MII com 4 dentes, MIV
+unidentada e lobos posteriores curtos; os ganchos a partir do setígero 7 a 15 (contra 16
+a 32 em Camargo & Lana 1995b) ficam cobertos pelo estado "do setígero 10 em diante".
+
 ## Célula que continua vazia (1)
 
 *Lysarete brasiliensis*, cor das acículas: Camargo & Lana (1995a) descrevem a
@@ -149,6 +164,7 @@ das espécies, e a diferença em relação às diagnoses dos gêneros é variaç
 - Carrera-Parra, L.F. (2001). Recognition of *Cenogenus* Chamberlin, 1919 (Polychaeta: Lumbrineridae) based on type material. Proceedings of the Biological Society of Washington 114(3): 720-724.
 - Carrera-Parra, L.F. (2006). Phylogenetic analysis of Lumbrineridae Schmarda, 1861 (Annelida: Polychaeta). Zootaxa 1332: 1-36.
 - Hartman, O. (1965). Deep-water benthic polychaetous annelids off New England to Bermuda and other North Atlantic areas. Allan Hancock Foundation Occasional Papers 28: 1-378.
+- Hartman, O. & Fauchald, K. (1971). Deep-water benthic polychaetous annelids off New England to Bermuda and other North Atlantic areas. Part II. Allan Hancock Monographs in Marine Biology 6: 1-327.
 - Orensanz, J.M. (1990). The eunicemorph polychaete annelids from Antarctic and Subantarctic seas. Antarctic Research Series 52: 1-183.
 - Oug, E. (2003). Lumbrineridae from north east Atlantic waters. NMBAQC.
 - Oug, E. (2012). Guide to identification of Lumbrineridae (Polychaeta) in north east Atlantic waters, versão 3.2. NMBAQC.

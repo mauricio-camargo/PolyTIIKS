@@ -254,6 +254,7 @@ referencias <- c(
   "Carrera-Parra, L.F. (2001). Recognition of Cenogenus Chamberlin, 1919 (Polychaeta: Lumbrineridae) based on type material. Proceedings of the Biological Society of Washington 114(3): 720-724.",
   "Carrera-Parra, L.F. (2006). Phylogenetic analysis of Lumbrineridae Schmarda, 1861 (Annelida: Polychaeta). Zootaxa 1332: 1-36.",
   "Hartman, O. (1965). Deep-water benthic polychaetous annelids off New England to Bermuda and other North Atlantic areas. Allan Hancock Foundation Occasional Papers 28: 1-378.",
+  "Hartman, O. & Fauchald, K. (1971). Deep-water benthic polychaetous annelids off New England to Bermuda and other North Atlantic areas. Part II. Allan Hancock Monographs in Marine Biology 6: 1-327.",
   "Neal, L., Abrahams, E., Wiklund, H., Rabone, M., Bribiesca-Contreras, G., Stewart, E.C.D., Dahlgren, T.G. & Glover, A.G. (2023). Taxonomy, phylogeny, and biodiversity of Lumbrineridae (Annelida, Polychaeta) from the Central Pacific Clarion-Clipperton Zone. ZooKeys 1172: 61-100.",
   "Orensanz, J.M. (1990). The eunicemorph polychaete annelids from Antarctic and Subantarctic seas. Antarctic Research Series 52: 1-183.",
   "Oug, E. (2003). Lumbrineridae from north east Atlantic waters. NMBAQC.",
