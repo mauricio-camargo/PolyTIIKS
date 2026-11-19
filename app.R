@@ -249,7 +249,9 @@ script_glossario <- "
   }
 "
 
-referencias <- c(
+# Referências: texto e, quando houver, endereço do PDF de acesso livre
+# (coluna "pdf"; vazio = sem link).
+referencias <- data.frame(texto = c(
   "Borisova, P. & Budaeva, N. (2022). First molecular phylogeny of Lumbrineridae (Annelida). Diversity 14(2): 83.",
   "Camargo, M.G. & Lana, P.C. (1995a). Lumbrineridae (Polychaeta: Eunicemorpha) da costa sul e sudeste do Brasil. I. Lysarete, Arabelloneris, Lumbrineriopsis, Lumbrinerides, Paraninoe e Ninoe. Iheringia, Série Zoologia 79: 77-91.",
   "Camargo, M.G. & Lana, P.C. (1995b). Lumbrineridae (Polychaeta: Eunicemorpha) da costa sul e sudeste do Brasil. II. Lumbrineris. Iheringia, Série Zoologia 79: 93-120.",
@@ -263,7 +265,21 @@ referencias <- c(
   "Oug, E. (2012). Guide to identification of Lumbrineridae (Polychaeta) in north east Atlantic waters, versão 3.2. NMBAQC 2010 taxonomic workshop, Dove Marine Laboratory, 31 p.",
   "Scamparle Teodoro, N.M., Steiner, T.M. & Amaral, A.C.Z. (2023). A new species of Lumbrineriopsis (Annelida, Eunicida, Lumbrineridae) from southeastern Brazil. ZooKeys 1174: 175-189.",
   "Zanol, J., Carrera-Parra, L.F., Steiner, T.M., Amaral, A.C.Z., Wiklund, H., Ravara, A. & Budaeva, N. (2021). The current state of Eunicida (Annelida) systematics and biodiversity. Diversity 13(2): 74."
-)
+), pdf = c(
+  "https://www.mdpi.com/1424-2818/14/2/83/pdf",
+  "",
+  "",
+  "https://archive.org/download/biostor-74228/biostor-74228.pdf",
+  "https://doi.org/10.5281/zenodo.174245",
+  "",
+  "",
+  "https://zookeys.pensoft.net/article/100483/download/pdf/",
+  "",
+  "https://nmbaqcs.org/media/wl5igasw/oug-2003-lumbrineridae-from-north-east-atlantic-waters.pdf",
+  "https://nmbaqcs.org/media/ucjbgxs0/oug2012_lumbrineridae_p.pdf",
+  "https://zookeys.pensoft.net/article/101059/download/pdf/",
+  "https://www.mdpi.com/1424-2818/13/2/74/pdf"
+), stringsAsFactors = FALSE)
 
 ui <- fluidPage(
   tags$head(tags$style(HTML(estilo_arvore)),
@@ -331,7 +347,11 @@ ui <- fluidPage(
     tabPanel("Referências",
       h4("Referências"),
       p("Obras usadas na matriz, no glossário e nas pranchas."),
-      tags$ul(lapply(referencias, tags$li))
+      tags$ul(lapply(seq_len(nrow(referencias)), function(k) {
+        tags$li(referencias$texto[k],
+                if (nzchar(referencias$pdf[k]))
+                  tags$a(href = referencias$pdf[k], target = "_blank", "[PDF]"))
+      }))
     ),
     tabPanel("Sobre",
       h4("Sobre esta chave"),
