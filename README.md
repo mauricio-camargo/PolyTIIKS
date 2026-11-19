@@ -1,4 +1,4 @@
-# PolyTIIKS: chave x interativa de Lumbrineridae da Bacia de Pelotas
+# PolyTIIKS: chave interativa de Lumbrineridae da Bacia de Pelotas
 
 Chave de identificação interativa, de múltiplo acesso, para os Lumbrineridae
 (Annelida, Polychaeta) registrados na Bacia de Pelotas, inspirada no Intkey (sistema
@@ -37,6 +37,7 @@ source("baixar_pranchas.R")
 - **Glossário:** um verbete por caráter, com definição, estados, como observar,
   cuidados, figuras e fontes.
 - **Matriz:** a matriz completa de táxons por caracteres.
+- **Referências:** as obras usadas na matriz, no glossário e nas pranchas.
 
 Regras de comparação, como no ajuste padrão do Intkey: uma célula vazia (dado
 desconhecido) não elimina o táxon, e dois estados marcados no mesmo caráter valem como

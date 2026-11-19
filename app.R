@@ -1,5 +1,5 @@
 # =====================================================================
-# Chave interativa x de Lumbrineridae da Bacia de Pelotas
+# Chave interativa de Lumbrineridae da Bacia de Pelotas
 # R-base + pacote shiny.
 # Para rodar: deixe este arquivo na mesma pasta que os quatro arquivos de
 # dados e use shiny::runApp("caminho/da/pasta").
@@ -249,11 +249,12 @@ script_glossario <- "
 
 referencias <- c(
   "Borisova, P. & Budaeva, N. (2022). First molecular phylogeny of Lumbrineridae (Annelida). Diversity 14(2): 83.",
-  "Carrera-Parra, L.F. (2001). Recognition of Cenogenus Chamberlin, 1919 (Polychaeta: Lumbrineridae) based on type material. Proceedings of the Biological Society of Washington 114(3): 720-724.",
   "Camargo, M.G. & Lana, P.C. (1995a). Lumbrineridae (Polychaeta: Eunicemorpha) da costa sul e sudeste do Brasil. I. Lysarete, Arabelloneris, Lumbrineriopsis, Lumbrinerides, Paraninoe e Ninoe. Iheringia, Série Zoologia 79: 77-91.",
+  "Camargo, M.G. & Lana, P.C. (1995b). Lumbrineridae (Polychaeta: Eunicemorpha) da costa sul e sudeste do Brasil. II. Lumbrineris. Iheringia, Série Zoologia 79: 93-120.",
+  "Carrera-Parra, L.F. (2001). Recognition of Cenogenus Chamberlin, 1919 (Polychaeta: Lumbrineridae) based on type material. Proceedings of the Biological Society of Washington 114(3): 720-724.",
   "Carrera-Parra, L.F. (2006). Phylogenetic analysis of Lumbrineridae Schmarda, 1861 (Annelida: Polychaeta). Zootaxa 1332: 1-36.",
-  "Neal, L., Abrahams, E., Wiklund, H., Rabone, M., Bribiesca-Contreras, G., Stewart, E.C.D., Dahlgren, T.G. & Glover, A.G. (2023). Taxonomy, phylogeny, and biodiversity of Lumbrineridae (Annelida, Polychaeta) from the Central Pacific Clarion-Clipperton Zone. ZooKeys 1172: 61-100.",
   "Hartman, O. (1965). Deep-water benthic polychaetous annelids off New England to Bermuda and other North Atlantic areas. Allan Hancock Foundation Occasional Papers 28: 1-378.",
+  "Neal, L., Abrahams, E., Wiklund, H., Rabone, M., Bribiesca-Contreras, G., Stewart, E.C.D., Dahlgren, T.G. & Glover, A.G. (2023). Taxonomy, phylogeny, and biodiversity of Lumbrineridae (Annelida, Polychaeta) from the Central Pacific Clarion-Clipperton Zone. ZooKeys 1172: 61-100.",
   "Orensanz, J.M. (1990). The eunicemorph polychaete annelids from Antarctic and Subantarctic seas. Antarctic Research Series 52: 1-183.",
   "Oug, E. (2003). Lumbrineridae from north east Atlantic waters. NMBAQC.",
   "Oug, E. (2012). Guide to identification of Lumbrineridae (Polychaeta) in north east Atlantic waters, versão 3.2. NMBAQC 2010 taxonomic workshop, Dove Marine Laboratory, 31 p.",
@@ -316,14 +317,18 @@ ui <- fluidPage(
             tagList(h3(g), lapply(which(grupo == g), verbete))
           }),
           h3("Pranchas"),
-          lapply(pr$numero, bloco_prancha),
-          h3("Referências"),
-          tags$ul(lapply(referencias, tags$li))
+          lapply(pr$numero, bloco_prancha)
         )
       )
     ),
     tabPanel("Matriz",
-      div(style = "overflow-x: auto;", tableOutput("matriz"))
+      # font-size: letra um pouco menor que a do resto do app (14px)
+      div(style = "overflow-x: auto; font-size: 12px;", tableOutput("matriz"))
+    ),
+    tabPanel("Referências",
+      h4("Referências"),
+      p("Obras usadas na matriz, no glossário e nas pranchas."),
+      tags$ul(lapply(referencias, tags$li))
     ),
     tabPanel("Sobre",
       h4("Sobre esta chave"),
@@ -339,7 +344,7 @@ ui <- fluidPage(
         "combina com qualquer estado escolhido."),
       p("Mais de um estado marcado no mesmo caráter significa 'um ou outro':",
         "o táxon permanece se tiver pelo menos um dos estados marcados."),
-      p("O glossário foi compilado da literatura listada no fim da aba Glossário.",
+      p("O glossário foi compilado da literatura listada na aba Referências.",
         "As figuras vêm de artigos de acesso aberto, com licença CC BY 4.0;",
         "o crédito de cada uma está junto da prancha.")
     )
