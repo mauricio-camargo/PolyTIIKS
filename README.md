@@ -30,13 +30,14 @@ source("baixar_pranchas.R")
 
 ## O que o app faz
 
-- **Identificação:** os caracteres ficam numa árvore (grupo, caráter, estados) e podem
+- **Chave interativa:** os caracteres ficam numa árvore (grupo, caráter, estados) e podem
   ser usados em qualquer ordem. A lista de táxons restantes é atualizada a cada
-  escolha, e cada nome leva à descrição do táxon.
-- **Descrição do táxon:** os estados de cada caráter, com link para o WoRMS.
+  escolha, e cada nome leva à aba Táxons.
+- **Táxons:** link para o WoRMS, descrição do táxon (estados dos caracteres, numa janela
+  com links para o glossário) e descrição original.
+- **Matriz:** a matriz completa de táxons por caracteres.
 - **Glossário:** um verbete por caráter, com definição, estados, como observar,
   cuidados, figuras e fontes.
-- **Matriz:** a matriz completa de táxons por caracteres.
 - **Referências:** as obras usadas na matriz, no glossário e nas pranchas.
 
 Regras de comparação, como no ajuste padrão do Intkey: uma célula vazia (dado

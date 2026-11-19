@@ -236,6 +236,8 @@ estilo_glossario <- "
 # Glossário, rola a página até o ponto pedido e o destaca por 2,5 segundos.
 script_glossario <- "
   function irGlossario(id) {
+    // fecha a janela popup, se houver uma aberta (ex.: descrição do táxon)
+    if (window.jQuery) jQuery('.modal').modal('hide');
     document.querySelector('#abas a[data-value=\"Glossário\"]').click();
     setTimeout(function() {
       var alvo = document.getElementById(id);
@@ -269,7 +271,7 @@ ui <- fluidPage(
             tags$script(HTML(script_glossario))),
   titlePanel("Lumbrineridae da Bacia de Pelotas: chave interativa"),
   tabsetPanel(id = "abas",        # o id permite trocar de aba pelo servidor
-    tabPanel("Identificação",
+    tabPanel("Chave interativa",
       sidebarLayout(
         sidebarPanel(
           actionButton("recomecar", "Recomeçar"),
@@ -289,11 +291,15 @@ ui <- fluidPage(
         )
       )
     ),
-    tabPanel("Descrição do táxon",
+    tabPanel("Táxons",
       selectInput("taxon", "Táxon", choices = taxons),
       uiOutput("link_worms"),
-      p(actionLink("abrir_original", "Descrição original do táxon e referências")),
-      tableOutput("descricao")
+      p(actionLink("abrir_descricao", "Descrição do táxon (estados dos caracteres)")),
+      p(actionLink("abrir_original", "Descrição original do táxon e referências"))
+    ),
+    tabPanel("Matriz",
+      # font-size: letra um pouco menor que a do resto do app (14px)
+      div(style = "overflow-x: auto; font-size: 12px;", tableOutput("matriz"))
     ),
     tabPanel("Glossário",
       fluidRow(class = "glo-linha",
@@ -321,10 +327,6 @@ ui <- fluidPage(
           lapply(pr$numero, bloco_prancha)
         )
       )
-    ),
-    tabPanel("Matriz",
-      # font-size: letra um pouco menor que a do resto do app (14px)
-      div(style = "overflow-x: auto; font-size: 12px;", tableOutput("matriz"))
     ),
     tabPanel("Referências",
       h4("Referências"),
@@ -397,11 +399,11 @@ server <- function(input, output, session) {
     tab
   }, colnames = FALSE, bordered = FALSE, sanitize.text.function = function(x) x)
 
-  # Clique no nome de um táxon: escolhe esse táxon na aba "Descrição do
-  # táxon" e muda para ela. As caixas marcadas na identificação continuam.
+  # Clique no nome de um táxon: escolhe esse táxon na aba "Táxons" e muda
+  # para ela. As caixas marcadas na chave interativa continuam.
   observeEvent(input$ver_taxon, {
     updateSelectInput(session, "taxon", selected = input$ver_taxon)
-    updateTabsetPanel(session, "abas", selected = "Descrição do táxon")
+    updateTabsetPanel(session, "abas", selected = "Táxons")
   })
 
   # Link para a página do táxon no WoRMS (World Register of Marine
@@ -415,11 +417,23 @@ server <- function(input, output, session) {
              "WoRMS:", em(tax$nome_worms[k]), tax$autoridade[k]))
   })
 
-  # Descrição do táxon. O nome de cada caráter é um link para o glossário.
+  # Descrição do táxon: abre em uma janela popup a tabela com o estado de
+  # cada caráter. O nome de cada caráter é um link para o glossário; ao
+  # clicar nele, a janela fecha e o glossário abre no verbete.
+  observeEvent(input$abrir_descricao, {
+    showModal(modalDialog(
+      title = HTML(paste("Descrição do táxon:", nome_italico(input$taxon))),
+      div(style = "font-size: 13px;", tableOutput("descricao")),
+      size = "l", footer = modalButton("Fechar"), easyClose = TRUE
+    ))
+  })
+
   output$descricao <- renderTable({
     est <- mat[, input$taxon]
     est[is.na(est)] <- "não informado"
-    tab <- data.frame(esc(grupo),
+    # o nome do grupo aparece só na primeira linha de cada grupo
+    nome_grupo <- ifelse(duplicated(grupo), "", paste0("<strong>", esc(grupo), "</strong>"))
+    tab <- data.frame(nome_grupo,
                       link_glossario(paste0("glo", seq_len(n_car)), esc(carater)),
                       esc(gsub("/", " ou ", est)), stringsAsFactors = FALSE)
     names(tab) <- c("Grupo", "Caráter", "Estado")
