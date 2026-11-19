@@ -4,7 +4,8 @@
 # Para rodar: deixe este arquivo na mesma pasta que os quatro arquivos de
 # dados e use shiny::runApp("caminho/da/pasta").
 #   matriz_lumbrineridae.csv  caracteres x táxons
-#   taxons.csv                um táxon por linha, com o número no WoRMS
+#   taxons.csv                um táxon por linha: número no WoRMS, figura
+#                             (em www/taxons), legenda e descrição
 #   glossario.csv             um verbete por caráter
 #   pranchas.csv              figuras do glossário, com créditos
 # =====================================================================
@@ -228,6 +229,9 @@ estilo_glossario <- "
   .glo-fontes { color: #777; font-size: 12px; }
   .glo-mini a { display: inline-block; height: 162px; margin: 4px 8px 4px 0; overflow: hidden; }
   .glo-mini img { height: 160px; border: 1px solid #ccc; cursor: zoom-in; }
+  .ficha-fig img { max-width: 100%; max-height: 420px; border: 1px solid #ccc; }
+  .ficha-semfig { background: #f4f4f4; border: 1px dashed #bbb; padding: 20px; color: #666; }
+  .ficha-texto { text-align: justify; max-width: 800px; }
   .glo-ajuda { margin-left: 6px; padding: 0 5px; border: 1px solid; border-radius: 50%;
                font-size: 11px; font-weight: normal; text-decoration: none; }
 "
@@ -241,6 +245,18 @@ script_glossario <- "
     document.querySelector('#abas a[data-value=\"Glossário\"]').click();
     setTimeout(function() {
       var alvo = document.getElementById(id);
+      if (!alvo) return;
+      alvo.scrollIntoView();
+      alvo.classList.add('glo-alvo');
+      setTimeout(function() { alvo.classList.remove('glo-alvo'); }, 2500);
+    }, 200);
+  }
+  // o mesmo para a aba Referências
+  function irReferencia(chave) {
+    if (window.jQuery) jQuery('.modal').modal('hide');
+    document.querySelector('#abas a[data-value=\"Referências\"]').click();
+    setTimeout(function() {
+      var alvo = document.getElementById('ref-' + chave);
       if (!alvo) return;
       alvo.scrollIntoView();
       alvo.classList.add('glo-alvo');
@@ -280,6 +296,43 @@ referencias <- data.frame(texto = c(
   "https://zookeys.pensoft.net/article/101059/download/pdf/",
   "https://www.mdpi.com/1424-2818/13/2/74/pdf"
 ), stringsAsFactors = FALSE)
+# Chave de cada referência (usada nos textos das fichas: {CL1995a}) e a
+# citação curta que aparece no link.
+referencias$chave <- c("BB2022", "CL1995a", "CL1995b", "CP2001", "CP2006", "H1965",
+                       "HF1971", "N2023", "O1990", "O2003", "O2012", "ST2023", "Z2021")
+referencias$cita  <- c("Borisova & Budaeva 2022", "Camargo & Lana 1995a",
+                       "Camargo & Lana 1995b", "Carrera-Parra 2001", "Carrera-Parra 2006",
+                       "Hartman 1965", "Hartman & Fauchald 1971", "Neal et al. 2023",
+                       "Orensanz 1990", "Oug 2003", "Oug 2012",
+                       "Scamparle Teodoro et al. 2023", "Zanol et al. 2021")
+
+# Texto das fichas: além de *Nome* em itálico, as citações entre chaves
+# viram links que levam ao item da aba Referências:
+#   {CL1995a}          -> (Camargo & Lana 1995a)
+#   {CL1995b; O1990}   -> (Camargo & Lana 1995b; Orensanz 1990)
+#   {@CL1995a}         -> Camargo & Lana (1995a)   (citação no meio da frase)
+link_ref <- function(chave, narrativa = FALSE) {
+  k <- match(chave, referencias$chave)
+  if (is.na(k)) return(chave)
+  texto <- referencias$cita[k]
+  if (narrativa) texto <- sub(" ([0-9]{4}[a-z]?)$", " (\\1)", texto)
+  paste0("<a href='#' title='Ver nas referências' onclick=\"irReferencia('",
+         chave, "'); return false;\">", esc(texto), "</a>")
+}
+formatar_ficha <- function(x) {
+  x <- formatar(x)
+  m <- gregexpr("\\{@?[A-Za-z0-9; ]+\\}", x)
+  regmatches(x, m) <- lapply(regmatches(x, m), function(cits) {
+    vapply(cits, function(cit) {
+      narrativa <- startsWith(cit, "{@")
+      chaves <- strsplit(gsub("[{}@ ]", "", cit), ";")[[1]]
+      links <- vapply(chaves, link_ref, "", narrativa = narrativa)
+      if (narrativa) paste(links, collapse = "; ")
+      else paste0("(", paste(links, collapse = "; "), ")")
+    }, "")
+  })
+  x
+}
 
 ui <- fluidPage(
   tags$head(tags$style(HTML(estilo_arvore)),
@@ -308,10 +361,16 @@ ui <- fluidPage(
       )
     ),
     tabPanel("Táxons",
-      selectInput("taxon", "Táxon", choices = taxons),
-      uiOutput("link_worms"),
-      p(actionLink("abrir_descricao", "Descrição do táxon (estados dos caracteres)")),
-      p(actionLink("abrir_original", "Descrição original do táxon e referências"))
+      fluidRow(
+        column(4,
+          selectInput("taxon", "Táxon", choices = taxons),
+          uiOutput("link_worms"),
+          p(actionLink("abrir_descricao", "Descrição do táxon (estados dos caracteres)")),
+          p(actionLink("abrir_original", "Descrição original do táxon e referências"))
+        ),
+        # à direita: figura e descrição do táxon escolhido
+        column(8, uiOutput("ficha"))
+      )
     ),
     tabPanel("Matriz",
       # font-size: letra um pouco menor que a do resto do app (14px)
@@ -348,7 +407,7 @@ ui <- fluidPage(
       h4("Referências"),
       p("Obras usadas na matriz, no glossário e nas pranchas."),
       tags$ul(lapply(seq_len(nrow(referencias)), function(k) {
-        tags$li(referencias$texto[k],
+        tags$li(id = paste0("ref-", referencias$chave[k]), referencias$texto[k],
                 if (nzchar(referencias$pdf[k]))
                   tags$a(href = referencias$pdf[k], target = "_blank", "[PDF]"))
       }))
@@ -435,6 +494,30 @@ server <- function(input, output, session) {
                        tax$aphia_id[k])
     p(tags$a(href = endereco, target = "_blank",
              "WoRMS:", em(tax$nome_worms[k]), tax$autoridade[k]))
+  })
+
+  # Ficha do táxon (lado direito da aba): figura, legenda e descrição em
+  # português, com links para a aba Referências. Figuras em www/taxons.
+  output$ficha <- renderUI({
+    k <- match(input$taxon, tax$taxon)
+    if (is.na(k)) return(NULL)
+    figura <- if (nzchar(tax$figura[k])) {
+      tagList(
+        div(class = "ficha-fig",
+            tags$a(href = file.path("taxons", tax$figura[k]), target = "_blank",
+                   title = "Abrir a figura em outra janela",
+                   tags$img(src = file.path("taxons", tax$figura[k]),
+                            alt = input$taxon))),
+        p(class = "glo-fontes", HTML(formatar_ficha(tax$legenda[k]))))
+    } else {
+      div(class = "ficha-semfig", HTML(formatar_ficha(tax$legenda[k])))
+    }
+    tagList(
+      h3(HTML(nome_italico(input$taxon)), tags$small(tax$autoridade[k])),
+      figura,
+      h4("Descrição"),
+      div(class = "ficha-texto", p(HTML(formatar_ficha(tax$descricao[k]))))
+    )
   })
 
   # Descrição do táxon: abre em uma janela popup a tabela com o estado de
