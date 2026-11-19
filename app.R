@@ -203,8 +203,8 @@ legenda_prancha <- function(n) {
   tagList(
     lista(pr$legenda[k]),
     p(class = "glo-fontes",
-      paste0("Fonte: ", pr$credito[k], " Licença ", pr$licenca[k],
-             ". Legenda traduzida e adaptada do original."),
+      # a coluna "licenca" traz a licença e as observações sobre a figura
+      paste("Fonte:", pr$credito[k], pr$licenca[k]),
       tags$a(href = pr$fonte[k], target = "_blank", pr$fonte[k]))
   )
 }
@@ -346,7 +346,8 @@ ui <- fluidPage(
       p("Mais de um estado marcado no mesmo caráter significa 'um ou outro':",
         "o táxon permanece se tiver pelo menos um dos estados marcados."),
       p("O glossário foi compilado da literatura listada na aba Referências.",
-        "As figuras vêm de artigos de acesso aberto, com licença CC BY 4.0;",
+        "As figuras vêm de artigos de acesso aberto (licença CC BY 4.0) ou de",
+        "revista que permite a reprodução com citação da fonte;",
         "o crédito de cada uma está junto da prancha.")
     )
   )

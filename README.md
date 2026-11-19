@@ -67,6 +67,9 @@ coleção.
 
 ## Créditos das figuras
 
-As pranchas do glossário vêm de artigos de acesso aberto com licença CC BY 4.0
+As pranchas 1 a 5 do glossário vêm de artigos de acesso aberto com licença CC BY 4.0
 (Zanol et al. 2021; Borisova & Budaeva 2022; Teodoro et al. 2023; Neal et al. 2023).
-O crédito completo de cada uma está em `pranchas.csv` e no próprio app.
+A prancha 6 reúne desenhos de Camargo & Lana (1995b), publicados na Iheringia, Série
+Zoologia, que permite a reprodução com citação da fonte; o arquivo está em
+`www/pranchas/prancha6.png`. O crédito completo de cada prancha está em `pranchas.csv`
+e no próprio app.

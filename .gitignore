@@ -1,4 +1,6 @@
 .Rhistory
 .RData
 .Rproj.user/
-www/
+# figuras baixadas por baixar_pranchas.R; a prancha 6 faz parte do repositório
+www/pranchas/*
+!www/pranchas/prancha6.png
