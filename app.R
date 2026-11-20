@@ -344,7 +344,7 @@ ui <- fluidPage(
   tags$head(tags$style(HTML(estilo_arvore)),
             tags$style(HTML(estilo_glossario)),
             tags$script(HTML(script_glossario))),
-  titlePanel("Chave interativa de Lumbrineridae da Bacia de Pelotas"),
+  titlePanel("Chave interativa de Lumbrineridae (Polychaeta) da Bacia de Pelotas"),
   tabsetPanel(id = "abas",        # o id permite trocar de aba pelo servidor
     tabPanel("Chave interativa",
       sidebarLayout(
