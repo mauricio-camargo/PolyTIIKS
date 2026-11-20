@@ -231,7 +231,7 @@ estilo_glossario <- "
   .glo-mini img { height: 160px; border: 1px solid #ccc; cursor: zoom-in; }
   .ficha-fig img { max-width: 100%; max-height: 420px; border: 1px solid #ccc; }
   .ficha-semfig { background: #f4f4f4; border: 1px dashed #bbb; padding: 20px; color: #666; }
-  .ficha-texto { text-align: justify; max-width: 800px; }
+  .ficha-texto, .ficha-aviso { text-align: justify; max-width: 800px; }
   .glo-ajuda { margin-left: 6px; padding: 0 5px; border: 1px solid; border-radius: 50%;
                font-size: 11px; font-weight: normal; text-decoration: none; }
 "
@@ -338,7 +338,7 @@ ui <- fluidPage(
   tags$head(tags$style(HTML(estilo_arvore)),
             tags$style(HTML(estilo_glossario)),
             tags$script(HTML(script_glossario))),
-  titlePanel("Lumbrineridae da Bacia de Pelotas: chave interativa"),
+  titlePanel("Chave interativa de Lumbrineridae da Bacia de Pelotas"),
   tabsetPanel(id = "abas",        # o id permite trocar de aba pelo servidor
     tabPanel("Chave interativa",
       sidebarLayout(
@@ -365,8 +365,7 @@ ui <- fluidPage(
         column(4,
           selectInput("taxon", "Táxon", choices = taxons),
           uiOutput("link_worms"),
-          p(actionLink("abrir_descricao", "Descrição do táxon (estados dos caracteres)")),
-          p(actionLink("abrir_original", "Descrição original do táxon e referências"))
+          p(actionLink("abrir_descricao", "Descrição do táxon (estados dos caracteres)"))
         ),
         # à direita: figura e descrição do táxon escolhido
         column(8, uiOutput("ficha"))
@@ -514,12 +513,12 @@ server <- function(input, output, session) {
     }
     tagList(
       h3(HTML(nome_italico(input$taxon)), tags$small(tax$autoridade[k])),
-      # aviso (coluna "aviso"), ex.: figura de outra espécie do gênero
-      if (nzchar(tax$aviso[k])) p(class = "glo-atencao", strong("Atenção: "),
-                                  HTML(formatar_ficha(tax$aviso[k]))),
       figura,
-      h4("Descrição"),
-      div(class = "ficha-texto", p(HTML(formatar_ficha(tax$descricao[k]))))
+      h4("Descrição (apanhado)"),
+      div(class = "ficha-texto", p(HTML(formatar_ficha(tax$descricao[k])))),
+      # aviso (coluna "aviso"), ex.: figura de outra espécie do gênero
+      if (nzchar(tax$aviso[k])) p(class = "glo-atencao ficha-aviso", strong("Atenção: "),
+                                  HTML(formatar_ficha(tax$aviso[k])))
     )
   })
 
@@ -560,21 +559,6 @@ server <- function(input, output, session) {
                "Abrir a imagem em outra janela")),
       legenda_prancha(n),
       size = "l", footer = modalButton("Fechar"), easyClose = TRUE
-    ))
-  })
-
-  # Link "Descrição original do táxon e referências": abre uma janela
-  # (popup) sobre a página, para o táxon escolhido no seletor.
-  # O conteúdo ainda não foi preenchido.
-  observeEvent(input$abrir_original, {
-    showModal(modalDialog(
-      title = HTML(nome_italico(input$taxon)),
-      h4("Descrição original"),
-      p("(a preencher)"),
-      h4("Referências"),
-      p("(a preencher)"),
-      footer = modalButton("Fechar"),
-      easyClose = TRUE            # também fecha com um clique fora da janela
     ))
   })
 
