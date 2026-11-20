@@ -265,7 +265,7 @@ script_glossario <- "
   }
 "
 
-# Referências: texto e, quando houver, endereço do PDF de acesso livre
+# Referências: texto e endereço do PDF ou da página da obra
 # (coluna "pdf"; vazio = sem link).
 referencias <- data.frame(texto = c(
   "Borisova, P. & Budaeva, N. (2022). First molecular phylogeny of Lumbrineridae (Annelida). Diversity 14(2): 83.",
@@ -283,19 +283,25 @@ referencias <- data.frame(texto = c(
   "Zanol, J., Carrera-Parra, L.F., Steiner, T.M., Amaral, A.C.Z., Wiklund, H., Ravara, A. & Budaeva, N. (2021). The current state of Eunicida (Annelida) systematics and biodiversity. Diversity 13(2): 74."
 ), pdf = c(
   "https://www.mdpi.com/1424-2818/14/2/83/pdf",
-  "",
-  "",
+  "https://archive.org/download/biostor-80166/biostor-80166.pdf",
+  "https://archive.org/download/biostor-80163/biostor-80163.pdf",
   "https://archive.org/download/biostor-74228/biostor-74228.pdf",
   "https://doi.org/10.5281/zenodo.174245",
-  "",
-  "",
+  "https://doi.org/10.25549/hancock-ouc111637644",
+  "https://repository.si.edu/handle/10088/3458",
   "https://zookeys.pensoft.net/article/100483/download/pdf/",
-  "",
+  "https://doi.org/10.1029/AR052p0001",
   "https://nmbaqcs.org/media/wl5igasw/oug-2003-lumbrineridae-from-north-east-atlantic-waters.pdf",
   "https://nmbaqcs.org/media/ucjbgxs0/oug2012_lumbrineridae_p.pdf",
   "https://zookeys.pensoft.net/article/101059/download/pdf/",
   "https://www.mdpi.com/1424-2818/13/2/74/pdf"
 ), stringsAsFactors = FALSE)
+# Texto do link de cada referência: "[PDF]" quando abre o PDF direto;
+# nos outros casos, o que o link mostra.
+referencias$rotulo <- "[PDF]"
+referencias$rotulo[6] <- "[USC Digital Library]"
+referencias$rotulo[7] <- "[PDF em 4 partes, Smithsonian]"
+referencias$rotulo[9] <- "[DOI, acesso restrito]"
 # Chave de cada referência (usada nos textos das fichas: {CL1995a}) e a
 # citação curta que aparece no link.
 referencias$chave <- c("BB2022", "CL1995a", "CL1995b", "CP2001", "CP2006", "H1965",
@@ -404,7 +410,7 @@ ui <- fluidPage(
       tags$ul(lapply(seq_len(nrow(referencias)), function(k) {
         tags$li(id = paste0("ref-", referencias$chave[k]), referencias$texto[k],
                 if (nzchar(referencias$pdf[k]))
-                  tags$a(href = referencias$pdf[k], target = "_blank", "[PDF]"))
+                  tags$a(href = referencias$pdf[k], target = "_blank", referencias$rotulo[k]))
       }))
     ),
     tabPanel("Matriz",
