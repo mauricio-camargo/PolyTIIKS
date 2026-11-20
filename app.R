@@ -371,10 +371,6 @@ ui <- fluidPage(
         column(8, uiOutput("ficha"))
       )
     ),
-    tabPanel("Matriz",
-      # font-size: letra um pouco menor que a do resto do app (14px)
-      div(style = "overflow-x: auto; font-size: 12px;", tableOutput("matriz"))
-    ),
     tabPanel("Glossário",
       fluidRow(class = "glo-linha",
         column(3,
@@ -411,24 +407,22 @@ ui <- fluidPage(
                   tags$a(href = referencias$pdf[k], target = "_blank", "[PDF]"))
       }))
     ),
+    tabPanel("Matriz",
+      # font-size: letra um pouco menor que a do resto do app (14px)
+      div(style = "overflow-x: auto; font-size: 12px;", tableOutput("matriz"))
+    ),
     tabPanel("Sobre",
       h4("Sobre esta chave"),
-      p("Chave interativa de múltiplo acesso para os Lumbrineridae registrados",
-        "na Bacia de Pelotas, feita em R-base com o pacote shiny."),
-      p(n_tax, "táxons e", n_car, "caracteres. A matriz segue o formato do",
-        "pacote monographaR (Reginato 2016)."),
-      p(strong("Atenção:"), "matriz preliminar, compilada da literatura",
-        "(Camargo & Lana 1995a, b; Carrera-Parra 2001, 2006; Hartman 1965;",
-        "Kurt-Sahin et al. 2016). Os estados precisam ser conferidos contra",
-        "os originais e contra o material da coleção."),
-      p("Dado desconhecido não elimina o táxon: uma célula vazia na matriz",
-        "combina com qualquer estado escolhido."),
-      p("Mais de um estado marcado no mesmo caráter significa 'um ou outro':",
-        "o táxon permanece se tiver pelo menos um dos estados marcados."),
+      p("Esta é uma chave politômica interativa de múltiplo acesso para as",
+        "espécies da família Lumbrineridae registradas na Bacia de Pelotas,",
+        "criada em R-shiny, com assistência do modelo Fable 5.2 de IA da Anthropic."),
+      p("A chave foi inspirada no pacote monographaR (Reginato 2016) e adere",
+        "ao mesmo formato de planilha."),
+      p("São", n_tax, "táxons e", n_car, "caracteres."),
       p("O glossário foi compilado da literatura listada na aba Referências.",
-        "As figuras vêm de artigos de acesso aberto (licença CC BY 4.0) ou de",
-        "revista que permite a reprodução com citação da fonte;",
-        "o crédito de cada uma está junto da prancha.")
+        "As figuras podem vir de artigos de acesso aberto (licença CC BY 4.0),",
+        "de revistas que permitem a reprodução com citação da fonte ou ser",
+        "fornecidas pelo autor. O crédito de cada uma está junto da prancha.")
     )
   )
 )
