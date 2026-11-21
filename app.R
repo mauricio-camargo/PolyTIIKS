@@ -252,6 +252,11 @@ script_glossario <- "
     }, 200);
   }
   // o mesmo para a aba Referências
+  // abre uma aba pelo nome (ex.: irAba('Caminhos'))
+  function irAba(nome) {
+    document.querySelector('#abas a[data-value=\"' + nome + '\"]').click();
+    window.scrollTo(0, 0);
+  }
   function irReferencia(chave) {
     if (window.jQuery) jQuery('.modal').modal('hide');
     document.querySelector('#abas a[data-value=\"Referências\"]').click();
@@ -377,7 +382,7 @@ caminhos <- data.frame(etapa = c(
   paste("Escrever um verbete para cada um dos 24 caracteres (definição, estados, como",
         "observar, cuidados e fontes), ilustrado por 6 pranchas retiradas da literatura,",
         "com os créditos. Esta etapa foi feita inteiramente com o Fable 5.2, modelo da",
-        "categoria Mythos, a mais avançada da Anthropic, acima da Opus. O modelo leu as",
+        "categoria Mythos, a mais avançada da Anthropic. O modelo leu as",
         "descrições, redescrições e guias, cruzou as informações das diferentes fontes e",
         "redigiu os verbetes citando cada uma delas."),
   paste("Ligar cada referência ao PDF ou à página da obra (revista, BioStor,",
@@ -468,8 +473,8 @@ ui <- fluidPage(
     tabPanel("Caminhos",
       div(class = "ficha-texto",
         h4("Caminhos: como a chave foi construída"),
-        p("Os códigos do app foram escritos pelo modelo de IA Fable 5.1, da Anthropic,",
-          "a partir dos pedidos dos autores; a finalização foi feita com o Fable 5.2."),
+        p("Sequência de prompts usada para construir a chave, com o modelo de IA",
+          "Fable 5.1, da Anthropic, e, na finalização, com o Fable 5.2."),
         tags$ol(lapply(seq_len(nrow(caminhos)), function(k) {
           tags$li(strong(caminhos$etapa[k]), HTML(formatar_ficha(caminhos$texto[k])))
         }))
