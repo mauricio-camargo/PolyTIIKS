@@ -340,6 +340,53 @@ formatar_ficha <- function(x) {
   x
 }
 
+# Aba Caminhos: as etapas de construção da chave, em ordem. A coluna
+# "texto" aceita as mesmas convenções das fichas (*Nome* e {chave}).
+caminhos <- data.frame(etapa = c(
+  "Abertura do projeto.",
+  "Planilha de partida.",
+  "Primeiro pedido.",
+  "Levantamento bibliográfico.",
+  "Busca das referências.",
+  "Matriz de táxons × caracteres.",
+  "Primeiro app.",
+  "Customização em abas.",
+  "Fichas dos táxons.",
+  "Glossário.",
+  "Acesso às referências.",
+  "Matriz bruta."
+), texto = c(
+  "Criação do projeto PolyTIIKS no Claude, da Anthropic, começando pela família Lumbrineridae.",
+  "Inserção no projeto da planilha do checklist de poliquetas da Bacia de Pelotas.",
+  "Listar as espécies de Lumbrineridae da planilha: 14 táxons, sendo 13 espécies e um táxon identificado só até gênero (*Abyssoninoe* sp.).",
+  "Listar a bibliografia existente sobre os 14 táxons: descrições originais, redescrições, revisões da família e guias de identificação.",
+  "Localizar as 13 referências citadas, em versão digital.",
+  paste("Montar a planilha de táxons × caracteres no formato do pacote monographaR",
+        "(Reginato 2016): 24 caracteres organizados em grupos, com estados separados",
+        "por \"/\" nos casos de polimorfismo. As células vazias foram preenchidas, sempre",
+        "que possível, com as diagnoses dos gêneros e as descrições das espécies."),
+  paste("Criar um web app em Shiny semelhante ao gerado pela função interactiveKey()",
+        "do monographaR: o usuário marca os estados dos caracteres e a lista de táxons",
+        "restantes se atualiza."),
+  paste("Reorganizar o app nas abas atuais: Chave interativa (árvore de grupos,",
+        "caracteres e estados, usados em qualquer ordem), Táxons, Glossário,",
+        "Referências, Matriz, Caminhos e Sobre."),
+  paste("Transformar o nome de cada táxon em link para uma ficha com figura, link para",
+        "o WoRMS, um apanhado das descrições publicadas e a tabela com o estado de cada",
+        "caráter."),
+  paste("Escrever um verbete para cada um dos 24 caracteres (definição, estados, como",
+        "observar, cuidados e fontes), ilustrado por 6 pranchas retiradas da literatura,",
+        "com os créditos. Esta etapa foi feita inteiramente com o Fable 5.2, modelo da",
+        "categoria Mythos, a mais avançada da Anthropic, acima da Opus. O modelo leu as",
+        "descrições, redescrições e guias, cruzou as informações das diferentes fontes e",
+        "redigiu os verbetes citando cada uma delas."),
+  paste("Ligar cada referência ao PDF ou à página da obra (revista, BioStor,",
+        "Smithsonian, Zenodo ou DOI). As citações nas fichas dos táxons levam direto ao",
+        "item correspondente na aba Referências."),
+  paste("Mostrar a matriz completa, exatamente como é usada pela chave, com a opção de",
+        "baixá-la em .csv, para que a análise possa ser reproduzida ou reaproveitada.")
+), stringsAsFactors = FALSE)
+
 ui <- fluidPage(
   tags$head(tags$style(HTML(estilo_arvore)),
             tags$style(HTML(estilo_glossario)),
@@ -414,8 +461,19 @@ ui <- fluidPage(
       }))
     ),
     tabPanel("Matriz",
+      p(br(), downloadButton("baixar_matriz", "Baixar a matriz (.csv)")),
       # font-size: letra um pouco menor que a do resto do app (14px)
       div(style = "overflow-x: auto; font-size: 12px;", tableOutput("matriz"))
+    ),
+    tabPanel("Caminhos",
+      div(class = "ficha-texto",
+        h4("Caminhos: como a chave foi construída"),
+        p("Os códigos do app foram escritos pelo modelo de IA Fable 5.1, da Anthropic,",
+          "a partir dos pedidos dos autores; a finalização foi feita com o Fable 5.2."),
+        tags$ol(lapply(seq_len(nrow(caminhos)), function(k) {
+          tags$li(strong(caminhos$etapa[k]), HTML(formatar_ficha(caminhos$texto[k])))
+        }))
+      )
     ),
     tabPanel("Sobre",
       h4("Sobre esta chave"),
@@ -571,6 +629,12 @@ server <- function(input, output, session) {
     names(tab)[1:2] <- c("Grupo", "Caráter")
     tab
   }, na = "")
+
+  # Botão da aba Matriz: entrega o próprio arquivo lido pelo app
+  output$baixar_matriz <- downloadHandler(
+    filename = "matriz_lumbrineridae.csv",
+    content = function(file) file.copy("matriz_lumbrineridae.csv", file)
+  )
 
   # Botão Recomeçar: desmarca todas as caixas
   observeEvent(input$recomecar, {
