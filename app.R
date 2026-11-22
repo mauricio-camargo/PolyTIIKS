@@ -1,13 +1,15 @@
 # =====================================================================
 # Chave interativa de Lumbrineridae da Bacia de Pelotas
 # R-base + pacote shiny.
-# Para rodar: deixe este arquivo na mesma pasta que os quatro arquivos de
+# Para rodar: deixe este arquivo na mesma pasta que os cinco arquivos de
 # dados e use shiny::runApp("caminho/da/pasta").
 #   matriz_lumbrineridae.csv  caracteres x táxons
 #   taxons.csv                um táxon por linha: número no WoRMS, figura
 #                             (em www/taxons), legenda, descrição e aviso
 #   glossario.csv             um verbete por caráter
 #   pranchas.csv              figuras do glossário, com créditos
+#   chave_dicotomica.csv      chave dicotômica (aba Chave linear), um lead
+#                             por linha
 # =====================================================================
 
 library(shiny)
@@ -52,6 +54,13 @@ pr  <- read.csv("pranchas.csv",  fileEncoding = "UTF-8", colClasses = "character
 
 # Linha do glossário que corresponde a cada caráter da matriz (NA = sem verbete)
 lin_glo <- match(rotulo, paste(glo$Group, glo$Character, sep = ": "))
+
+# Chave dicotômica (aba Chave linear). Um lead (metade de um dístico) por linha:
+#   distico  número do dístico e letra do lead (1a, 1b, 2a...)
+#   texto    caracteres do lead (aceita *Nome* em itálico)
+#   destino  número do dístico seguinte ou nome do táxon
+#   genero   gênero ao qual o dístico seguinte leva (pode ficar vazio)
+chv <- read.csv("chave_dicotomica.csv", fileEncoding = "UTF-8", colClasses = "character")
 
 # ---------------------------------------------------------------------
 # 2. FUNÇÕES
@@ -392,10 +401,160 @@ caminhos <- data.frame(etapa = c(
         "baixá-la em .csv, para efeito de reprodutibilidade científica.")
 ), stringsAsFactors = FALSE)
 
+# ---------------------------------------------------------------------
+# Aba Chave linear: a chave dicotômica, com aparência de página impressa.
+# Cada lead ocupa uma linha da grade: número do dístico | texto, com uma
+# linha pontilhada até a margem | destino.
+# ---------------------------------------------------------------------
+chv$num <- sub("[ab]$", "", chv$distico)         # "13b" -> "13"
+num_disticos <- unique(chv$num)
+
+# De qual dístico se chega a cada um. Aparece entre parênteses ao lado do
+# número, para quem quiser voltar atrás na chave; o dístico 1 fica sem.
+origem <- chv$num[match(num_disticos, chv$destino)]
+names(origem) <- num_disticos
+
+# Um lead. Destino táxon = link para a ficha do táxon;
+# destino número = link que rola a página até aquele dístico.
+lead_chave <- function(k) {
+  d <- chv$destino[k]
+  destino <- if (d %in% taxons) link_taxon(d) else
+    paste0("<a href='#' onclick=\"irDistico('", d, "'); return false;\">", d, "</a>",
+           if (nzchar(chv$genero[k])) paste0(" (<em>", chv$genero[k], "</em>)"))
+  num <- chv$distico[k]
+  de  <- origem[chv$num[k]]
+  if (endsWith(num, "a") && !is.na(de)) num <- paste0(num, "<small>(", de, ")</small>")
+  # ch-reserva é uma cópia invisível do destino no fim do texto: guarda o
+  # espaço dele só na última linha, e o destino de verdade (ch-dest) fica
+  # por cima, no canto direito. Assim as outras linhas usam a largura toda.
+  div(class = "ch-lead",
+      span(class = "ch-num", HTML(num)),
+      div(class = "ch-texto",
+          span(class = "ch-palavras", HTML(formatar(chv$texto[k]))),
+          span(class = "ch-reserva", `aria-hidden` = "true", HTML(destino)),
+          span(class = "ch-dest", HTML(destino))))
+}
+
+# Um dístico: os dois leads juntos, com um id para os links de destino
+distico_chave <- function(n) {
+  div(class = "ch-distico", id = paste0("distico-", n),
+      lapply(which(chv$num == n), lead_chave))
+}
+
+intro_chave <- paste(
+  "Chave para os 14 táxons de Lumbrineridae da lista do projeto PolyTIIKS. Foi montada",
+  "a partir da matriz de caracteres usada na chave interativa",
+  "(<code>matriz_lumbrineridae.csv</code>, versão com o preenchimento de 16/11/2026 e a",
+  "correção de 19/11/2026) e das descrições de <code>taxons.csv</code>. Cada dístico usa",
+  "um caráter principal, em primeiro lugar, e caracteres de reforço em seguida. Os",
+  "caracteres de mais fácil observação (ganchos, brânquias, prostômio) vêm antes; as",
+  "maxilas ficam para o fim ou como reforço.")
+
+notas_chave <- data.frame(titulo = c(
+  "Fragmentos anteriores.",
+  "Papilas de *Augeneria*.",
+  "*Abyssoninoe* sp.",
+  "Acículas negras.",
+  "Conferência."
+), texto = c(
+  paste("Em *Ninoe*, *Cenogenus antarctica*, *Abyssoninoe* sp. e *Scoletoma atlantica*,",
+        "os ganchos nítidos só aparecem depois do setígero 10 (até o 32 em *S. atlantica*).",
+        "Um fragmento anterior curto dessas espécies pode ser levado por engano ao",
+        "dístico 2. Antes de seguir para o 2, confirme a ausência de ganchos num fragmento",
+        "com mais de 35 setígeros, ou confira as maxilas e as brânquias."),
+  paste("Variam de 0 a 3 (média de 2,4) e muitas vezes ficam escondidas sob o peristômio.",
+        "Por isso não decidem sozinhas o dístico 9: o número de pares de maxilas, a MIV com",
+        "centro claro e as acículas castanhas pesam mais."),
+  paste("O material local só foi identificado até gênero. Os caracteres do dístico 12 vêm",
+        "da diagnose do gênero e de *A. abyssorum*; devem ser revistos quando a espécie for",
+        "determinada."),
+  paste("Só *Cenogenus antarctica* e as duas *Ninoe* têm acículas negras; é um bom reforço",
+        "para os dísticos 5 e 6. A cor das acículas de *Lysarete brasiliensis* não é",
+        "conhecida e não entra na chave."),
+  paste("A chave foi conferida contra a matriz: cada táxon foi levado pelos dísticos com",
+        "os seus estados e chegou ao próprio nome, e nenhum caráter citado em um dístico",
+        "contradiz a matriz para os táxons que passam por ele. Nenhum dístico decide por um",
+        "caráter em que o táxon que passa por ele seja variável na matriz.")
+), stringsAsFactors = FALSE)
+
+# Obras citadas na chave (as mesmas da aba Referências)
+refs_chave <- match(c("CL1995a", "CL1995b", "H1965", "HF1971", "O1990", "O2012"),
+                    referencias$chave)
+
+# Aparência de folha impressa. --fundo é a cor do papel: o texto de cada
+# lead fica sobre ela e esconde a linha pontilhada, que só aparece depois
+# da última palavra. As regras de print-color-adjust fazem a linha
+# pontilhada sair também na impressão e no PDF.
+estilo_chave <- "
+  .ch-barra { max-width: 860px; margin: 12px auto 0; text-align: right; }
+  .ch-folha { --fundo: #fff; max-width: 860px; margin: 8px auto 30px; padding: 32px 44px;
+              background: var(--fundo); color: #222; border: 1px solid #ddd;
+              box-shadow: 0 2px 8px rgba(0,0,0,.08);
+              font-family: Georgia, 'Times New Roman', serif; font-size: 15px; line-height: 1.5; }
+  .ch-folha h3 { font-family: inherit; font-size: 21px; font-weight: bold;
+                 text-align: center; margin: 0 0 18px; }
+  .ch-folha h4 { font-family: inherit; font-size: 16px; font-weight: bold; margin: 26px 0 8px;
+                 padding-bottom: 3px; border-bottom: 1px solid #bbb; }
+  .ch-folha code { font-size: 13px; color: #444; background: #f3f3f3; padding: 0 3px; }
+  .ch-intro { text-align: justify; }
+  .ch-distico { --fundo: #fff; margin: 0 -6px; padding: 4px 6px; border-radius: 3px;
+                scroll-margin-top: 80px; }
+  .ch-distico + .ch-distico { margin-top: 6px; }
+  .ch-distico.glo-alvo { --fundo: #fff6cc; background: var(--fundo); }
+  .ch-lead { display: grid; grid-template-columns: 4.6em 1fr; column-gap: 4px; }
+  .ch-num { font-weight: bold; }
+  .ch-num small { font-size: 80%; font-weight: normal; color: #888; margin-left: 1px; }
+  .ch-texto { position: relative;
+              background-image: radial-gradient(circle, #999 0.9px, transparent 1.2px);
+              background-size: 6px 4px; background-repeat: repeat-x;
+              background-position: left bottom 0.3em; }
+  .ch-palavras { background: var(--fundo); padding-right: 5px; }
+  .ch-reserva, .ch-dest { white-space: nowrap; font-weight: bold; }
+  .ch-reserva { display: inline-block; visibility: hidden; padding-left: 1.2em; }
+  .ch-dest { position: absolute; right: 0; bottom: 0; padding-left: 5px;
+             background: var(--fundo); }
+  .ch-texto, .ch-palavras, .ch-dest { -webkit-print-color-adjust: exact;
+                                      print-color-adjust: exact; }
+  .ch-notas, .ch-refs { font-size: 13.5px; text-align: justify; padding-left: 22px; }
+  .ch-notas li, .ch-refs li { margin-bottom: 4px; }
+  @media print {
+    .ch-folha { border: none; box-shadow: none; margin: 0; padding: 0; max-width: none; }
+    .ch-folha a { color: #000; text-decoration: none; }
+    .ch-distico { break-inside: avoid; }
+  }
+  @page { margin: 2cm; }
+"
+
+# irDistico: rola até o dístico e o destaca por 2,5 segundos.
+# imprimirChave: abre só a folha da chave numa janela nova e chama a
+# impressão do navegador (onde dá para escolher \"Salvar como PDF\").
+script_chave <- "
+  function irDistico(n) {
+    var alvo = document.getElementById('distico-' + n);
+    if (!alvo) return;
+    alvo.scrollIntoView({block: 'center', behavior: 'smooth'});
+    alvo.classList.add('glo-alvo');
+    setTimeout(function() { alvo.classList.remove('glo-alvo'); }, 2500);
+  }
+  function imprimirChave() {
+    var w = window.open('', '_blank');
+    if (!w) { window.print(); return; }
+    w.document.write('<!DOCTYPE html><html><head><meta charset=utf-8>' +
+      '<title>Chave dicotômica de Lumbrineridae da Bacia de Pelotas</title><style>' +
+      document.getElementById('estilo-chave').textContent + '</style></head><body>' +
+      document.querySelector('.ch-folha').outerHTML + '</body></html>');
+    w.document.close();
+    w.focus();
+    setTimeout(function() { w.print(); }, 300);
+  }
+"
+
 ui <- fluidPage(
   tags$head(tags$style(HTML(estilo_arvore)),
             tags$style(HTML(estilo_glossario)),
-            tags$script(HTML(script_glossario))),
+            tags$style(id = "estilo-chave", HTML(estilo_chave)),
+            tags$script(HTML(script_glossario)),
+            tags$script(HTML(script_chave))),
   titlePanel("Chave interativa de Lumbrineridae (Polychaeta) da Bacia de Pelotas"),
   tabsetPanel(id = "abas",        # o id permite trocar de aba pelo servidor
     tabPanel("Chave interativa",
@@ -416,6 +575,24 @@ ui <- fluidPage(
             tableOutput("restantes")
           )
         )
+      )
+    ),
+    tabPanel("Chave linear",
+      div(class = "ch-barra",
+        tags$button(type = "button", class = "btn btn-default", onclick = "imprimirChave()",
+                    "Imprimir ou salvar em PDF")),
+      div(class = "ch-folha",
+        h3("Chave dicotômica para Lumbrineridae da Bacia de Pelotas"),
+        p(class = "ch-intro", HTML(intro_chave)),
+        h4("Chave"),
+        lapply(num_disticos, distico_chave),
+        h4("Notas"),
+        tags$ol(class = "ch-notas", lapply(seq_len(nrow(notas_chave)), function(k) {
+          tags$li(strong(HTML(formatar(notas_chave$titulo[k]))),
+                  HTML(formatar(notas_chave$texto[k])))
+        })),
+        h4("Referências"),
+        tags$ul(class = "ch-refs", lapply(refs_chave, function(k) tags$li(referencias$texto[k])))
       )
     ),
     tabPanel("Táxons",
