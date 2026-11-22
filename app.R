@@ -473,7 +473,7 @@ ui <- fluidPage(
     tabPanel("Caminhos",
       div(class = "ficha-texto",
         h4("Caminhos: como a chave foi construída"),
-        p("Sequência de prompts usados para construir a chave interativa com auxílio da  IA" 
+        p("Sequência de prompts usados para construir a chave interativa com auxílio da IA",
           "Fable 5.1, da Anthropic, e, na finalização, com o Fable 5.2."),
         tags$ol(lapply(seq_len(nrow(caminhos)), function(k) {
           tags$li(strong(caminhos$etapa[k]), HTML(formatar_ficha(caminhos$texto[k])))
