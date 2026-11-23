@@ -1,0 +1,13 @@
+name: polytiiks_teste
+title: PolyTIIKS_Teste
+username: atlaspoliqrs
+account: atlaspoliqrs
+server: connect.posit.cloud
+hostUrl: https://api.connect.posit.cloud/v1
+appId: 01a208e2-fd1a-2712-075f-1410ed884324
+appGuid:
+bundleId:
+url: https://connect.posit.cloud/atlaspoliqrs/content/01a208e2-fd1a-2712-075f-1410ed884324
+version: 1
+asMultiple: FALSE
+asStatic: FALSE

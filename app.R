@@ -171,20 +171,6 @@ estilo_arvore <- "
   .arvore details:has(input:checked) > summary::after { content: ' \\2713'; color: #2a9d5c; }
 "
 
-# Aba Chave interativa. Em tela larga: árvore à esquerda e táxons à direita;
-# "sticky" mantém os táxons à vista enquanto se rola a árvore.
-# Em janela estreita (menos de 768 px: painel Viewer do RStudio, navegador em
-# meia tela, quadro do Posit), o sidebarLayout() põe um painel embaixo do
-# outro e a lista de táxons sumia sob a árvore. Por isso, nessa largura, a
-# ordem se inverte (column-reverse) e os táxons vêm em cima.
-estilo_chave_interativa <- "
-  .ci-resultado { position: sticky; top: 10px; max-height: 95vh; overflow-y: auto; }
-  @media (max-width: 767px) {
-    .ci-chave > .row { display: flex; flex-direction: column-reverse; }
-    .ci-resultado { position: static; max-height: none; overflow-y: visible; }
-  }
-"
-
 # Glossário: um bloco (verbete) por caráter, na mesma ordem da árvore.
 # Cada parte do verbete só aparece se a coluna correspondente estiver
 # preenchida no glossario.csv.
@@ -553,11 +539,16 @@ script_chave <- "
   function imprimirChave() {
     var w = window.open('', '_blank');
     if (!w) { window.print(); return; }
-    w.document.write('<!DOCTYPE html><html><head><meta charset=utf-8>' +
-      '<title>Chave dicotômica de Lumbrineridae da Bacia de Pelotas</title><style>' +
-      document.getElementById('estilo-chave').textContent + '</style></head><body>' +
-      document.querySelector('.ch-folha').outerHTML + '</body></html>');
-    w.document.close();
+    // A janela nova é montada pelo DOM, sem escrever as marcas da página
+    // (head, body, html) em texto: o Posit Connect Cloud procura essas
+    // marcas no HTML do app para inserir o próprio código, e uma cópia delas
+    // aqui quebrava este script e a página inteira.
+    var d = w.document;
+    d.title = 'Chave dicotômica de Lumbrineridae da Bacia de Pelotas';
+    var estilo = d.createElement('style');
+    estilo.textContent = document.getElementById('estilo-chave').textContent;
+    d.head.appendChild(estilo);
+    d.body.innerHTML = document.querySelector('.ch-folha').outerHTML;
     w.focus();
     setTimeout(function() { w.print(); }, 300);
   }
@@ -565,130 +556,129 @@ script_chave <- "
 
 ui <- fluidPage(
   tags$head(tags$style(HTML(estilo_arvore)),
-            tags$style(HTML(estilo_chave_interativa)),
             tags$style(HTML(estilo_glossario)),
             tags$style(id = "estilo-chave", HTML(estilo_chave)),
             tags$script(HTML(script_glossario)),
             tags$script(HTML(script_chave))),
   titlePanel("Chave interativa de Lumbrineridae (Polychaeta) da Bacia de Pelotas"),
   tabsetPanel(id = "abas",        # o id permite trocar de aba pelo servidor
-              tabPanel("Chave interativa",
-                       # a classe ci-chave liga as regras de estilo_chave_interativa
-                       div(class = "ci-chave", sidebarLayout(
-                         sidebarPanel(
-                           actionButton("recomecar", "Recomeçar"),
-                           helpText("Marque o grupo, o caráter e os estados, em qualquer ordem."),
-                           div(class = "arvore", lapply(unique(grupo), ramo_grupo))
-                         ),
-                         mainPanel(
-                           div(class = "ci-resultado",
-                               h2("Táxons"),
-                               textOutput("n_taxons"),
-                               textOutput("n_caracteres"),
-                               uiOutput("lista_caracteres"),
-                               br(),
-                               tableOutput("restantes")
-                           )
-                         )
-                       ))
-              ),
-              tabPanel("Chave linear",
-                       div(class = "ch-barra",
-                           tags$button(type = "button", class = "btn btn-default", onclick = "imprimirChave()",
-                                       "Imprimir ou salvar em PDF")),
-                       div(class = "ch-folha",
-                           h3("Chave dicotômica para Lumbrineridae da Bacia de Pelotas"),
-                           p(class = "ch-intro", HTML(intro_chave)),
-                           h4("Chave"),
-                           lapply(num_disticos, distico_chave),
-                           h4("Notas"),
-                           tags$ol(class = "ch-notas", lapply(seq_len(nrow(notas_chave)), function(k) {
-                             tags$li(strong(HTML(formatar(notas_chave$titulo[k]))),
-                                     HTML(formatar(notas_chave$texto[k])))
-                           })),
-                           h4("Referências"),
-                           tags$ul(class = "ch-refs", lapply(refs_chave, function(k) tags$li(referencias$texto[k])))
-                       )
-              ),
-              tabPanel("Táxons",
-                       fluidRow(
-                         column(4,
-                                selectInput("taxon", "Táxon", choices = taxons),
-                                uiOutput("link_worms"),
-                                p(actionLink("abrir_descricao", "Descrição do táxon (estados dos caracteres)"))
-                         ),
-                         # à direita: figura e descrição do táxon escolhido
-                         column(8, uiOutput("ficha"))
-                       )
-              ),
-              tabPanel("Glossário",
-                       fluidRow(class = "glo-linha",
-                                column(3,
-                                       div(class = "glo-indice",
-                                           h4("Índice"),
-                                           lapply(unique(grupo), function(g) {
-                                             tagList(strong(g), tags$ul(lapply(which(grupo == g), function(i) {
-                                               tags$li(HTML(link_glossario(paste0("glo", i), esc(carater[i]))))
-                                             })))
-                                           }),
-                                           strong("Pranchas"),
-                                           tags$ul(lapply(pr$numero, function(n) {
-                                             tags$li(HTML(link_glossario(paste0("prancha", n), paste("Prancha", n))))
-                                           }))
-                                       )
-                                ),
-                                column(9,
-                                       helpText("Texto preliminar, compilado da literatura; precisa de revisão.",
-                                                "Clique em uma figura, ou em 'Prancha', para ver a prancha ampliada."),
-                                       lapply(unique(grupo), function(g) {
-                                         tagList(h3(g), lapply(which(grupo == g), verbete))
-                                       }),
-                                       h3("Pranchas"),
-                                       lapply(pr$numero, bloco_prancha)
-                                )
-                       )
-              ),
-              tabPanel("Referências",
-                       h4("Referências"),
-                       p("Obras usadas na matriz, no glossário e nas pranchas."),
-                       tags$ul(lapply(seq_len(nrow(referencias)), function(k) {
-                         tags$li(id = paste0("ref-", referencias$chave[k]), referencias$texto[k],
-                                 if (nzchar(referencias$pdf[k]))
-                                   tags$a(href = referencias$pdf[k], target = "_blank", referencias$rotulo[k]))
-                       }))
-              ),
-              tabPanel("Matriz",
-                       p(br(), downloadButton("baixar_matriz", "Baixar a matriz (.csv)")),
-                       # font-size: letra um pouco menor que a do resto do app (14px)
-                       div(style = "overflow-x: auto; font-size: 12px;", tableOutput("matriz"))
-              ),
-              tabPanel("Caminhos",
-                       div(class = "ficha-texto",
-                           h4("Caminhos: como a chave foi construída"),
-                           p("Sequência de prompts usados para construir a chave interativa com auxílio da IA",
-                             "Fable 5.1, da Anthropic, e, na finalização, com o Fable 5.2."),
-                           tags$ol(lapply(seq_len(nrow(caminhos)), function(k) {
-                             tags$li(strong(caminhos$etapa[k]), HTML(formatar_ficha(caminhos$texto[k])))
-                           }))
-                       )
-              ),
-              tabPanel("Sobre",
-                       h4("Sobre esta chave"),
-                       p("Esta é uma chave politômica interativa de múltiplo acesso para as",
-                         "espécies da família Lumbrineridae registradas na Bacia de Pelotas,",
-                         "criada em R-shiny com a assistência do modelo Fable 5.2 de IA da Anthropic,",
-                         "por Maurício Camargo, Mariana Lisboa e Raphael Pinotti, como parte do",
-                         "projeto PolyTIIKS (Polychaeta Taxonomic Interactive Identification Keys",
-                         "in Shiny), do Laboratório de Ecologia de Invertebrados Bentônicos",
-                         HTML("(<a href='https://www.instagram.com/bentosfurg/' target='_blank'>@bentosfurg</a>).")),
-                       p("A chave foi inspirada no pacote monographaR (Reginato 2016) e adere",
-                         "ao mesmo formato de planilha."),
-                       p("São", n_tax, "táxons e", n_car, "caracteres."),
-                       p("O glossário foi compilado da literatura listada na aba Referências.",
-                         "As figuras podem vir de artigos de acesso aberto (licença CC BY 4.0),",
-                         "de revistas que permitem a reprodução com citação da fonte ou ser",
-                         "fornecidas pelo autor. O crédito de cada uma está junto da prancha.")
-              )
+    tabPanel("Chave interativa",
+      sidebarLayout(
+        sidebarPanel(
+          actionButton("recomecar", "Recomeçar"),
+          helpText("Marque o grupo, o caráter e os estados, em qualquer ordem."),
+          div(class = "arvore", lapply(unique(grupo), ramo_grupo))
+        ),
+        mainPanel(
+          # "sticky" mantém o resultado à vista enquanto se rola a lista de caracteres
+          div(style = "position: sticky; top: 10px; max-height: 95vh; overflow-y: auto;",
+            h2("Táxons"),
+            textOutput("n_taxons"),
+            textOutput("n_caracteres"),
+            uiOutput("lista_caracteres"),
+            br(),
+            tableOutput("restantes")
+          )
+        )
+      )
+    ),
+    tabPanel("Chave linear",
+      div(class = "ch-barra",
+        tags$button(type = "button", class = "btn btn-default", onclick = "imprimirChave()",
+                    "Imprimir ou salvar em PDF")),
+      div(class = "ch-folha",
+        h3("Chave dicotômica para Lumbrineridae da Bacia de Pelotas"),
+        p(class = "ch-intro", HTML(intro_chave)),
+        h4("Chave"),
+        lapply(num_disticos, distico_chave),
+        h4("Notas"),
+        tags$ol(class = "ch-notas", lapply(seq_len(nrow(notas_chave)), function(k) {
+          tags$li(strong(HTML(formatar(notas_chave$titulo[k]))),
+                  HTML(formatar(notas_chave$texto[k])))
+        })),
+        h4("Referências"),
+        tags$ul(class = "ch-refs", lapply(refs_chave, function(k) tags$li(referencias$texto[k])))
+      )
+    ),
+    tabPanel("Táxons",
+      fluidRow(
+        column(4,
+          selectInput("taxon", "Táxon", choices = taxons),
+          uiOutput("link_worms"),
+          p(actionLink("abrir_descricao", "Descrição do táxon (estados dos caracteres)"))
+        ),
+        # à direita: figura e descrição do táxon escolhido
+        column(8, uiOutput("ficha"))
+      )
+    ),
+    tabPanel("Glossário",
+      fluidRow(class = "glo-linha",
+        column(3,
+          div(class = "glo-indice",
+            h4("Índice"),
+            lapply(unique(grupo), function(g) {
+              tagList(strong(g), tags$ul(lapply(which(grupo == g), function(i) {
+                tags$li(HTML(link_glossario(paste0("glo", i), esc(carater[i]))))
+              })))
+            }),
+            strong("Pranchas"),
+            tags$ul(lapply(pr$numero, function(n) {
+              tags$li(HTML(link_glossario(paste0("prancha", n), paste("Prancha", n))))
+            }))
+          )
+        ),
+        column(9,
+          helpText("Texto preliminar, compilado da literatura; precisa de revisão.",
+                   "Clique em uma figura, ou em 'Prancha', para ver a prancha ampliada."),
+          lapply(unique(grupo), function(g) {
+            tagList(h3(g), lapply(which(grupo == g), verbete))
+          }),
+          h3("Pranchas"),
+          lapply(pr$numero, bloco_prancha)
+        )
+      )
+    ),
+    tabPanel("Referências",
+      h4("Referências"),
+      p("Obras usadas na matriz, no glossário e nas pranchas."),
+      tags$ul(lapply(seq_len(nrow(referencias)), function(k) {
+        tags$li(id = paste0("ref-", referencias$chave[k]), referencias$texto[k],
+                if (nzchar(referencias$pdf[k]))
+                  tags$a(href = referencias$pdf[k], target = "_blank", referencias$rotulo[k]))
+      }))
+    ),
+    tabPanel("Matriz",
+      p(br(), downloadButton("baixar_matriz", "Baixar a matriz (.csv)")),
+      # font-size: letra um pouco menor que a do resto do app (14px)
+      div(style = "overflow-x: auto; font-size: 12px;", tableOutput("matriz"))
+    ),
+    tabPanel("Caminhos",
+      div(class = "ficha-texto",
+        h4("Caminhos: como a chave foi construída"),
+        p("Sequência de prompts usados para construir a chave interativa com auxílio da IA",
+          "Fable 5.1, da Anthropic, e, na finalização, com o Fable 5.2."),
+        tags$ol(lapply(seq_len(nrow(caminhos)), function(k) {
+          tags$li(strong(caminhos$etapa[k]), HTML(formatar_ficha(caminhos$texto[k])))
+        }))
+      )
+    ),
+    tabPanel("Sobre",
+      h4("Sobre esta chave"),
+      p("Esta é uma chave politômica interativa de múltiplo acesso para as",
+        "espécies da família Lumbrineridae registradas na Bacia de Pelotas,",
+        "criada em R-shiny com a assistência do modelo Fable 5.2 de IA da Anthropic,",
+        "por Maurício Camargo, Mariana Lisboa e Raphael Pinotti, como parte do",
+        "projeto PolyTIIKS (Polychaeta Taxonomic Interactive Identification Keys",
+        "in Shiny), do Laboratório de Ecologia de Invertebrados Bentônicos",
+        HTML("(<a href='https://www.instagram.com/bentosfurg/' target='_blank'>@bentosfurg</a>).")),
+      p("A chave foi inspirada no pacote monographaR (Reginato 2016) e adere",
+        "ao mesmo formato de planilha."),
+      p("São", n_tax, "táxons e", n_car, "caracteres."),
+      p("O glossário foi compilado da literatura listada na aba Referências.",
+        "As figuras podem vir de artigos de acesso aberto (licença CC BY 4.0),",
+        "de revistas que permitem a reprodução com citação da fonte ou ser",
+        "fornecidas pelo autor. O crédito de cada uma está junto da prancha.")
+    )
   )
 )
 
@@ -696,21 +686,21 @@ ui <- fluidPage(
 # 4. LÓGICA (server)
 # ---------------------------------------------------------------------
 server <- function(input, output, session) {
-  
+
   # Estados escolhidos em cada caráter (NULL = caráter não usado)
   escolhas <- reactive(lapply(ids, function(id) input[[id]]))
   usados   <- reactive(which(lengths(escolhas()) > 0))
-  
+
   # Vetor lógico: TRUE para os táxons que ainda combinam com tudo
   resta <- reactive({
     ok <- rep(TRUE, n_tax)
     for (i in usados()) ok <- ok & compativel(i, escolhas()[[i]])
     ok
   })
-  
+
   output$n_taxons     <- renderText(paste(sum(resta()), "táxon(s) restante(s)"))
   output$n_caracteres <- renderText(paste(length(usados()), "caractere(s) selecionado(s)"))
-  
+
   # Lista dos caracteres selecionados, com os estados marcados em cada um
   # (na ordem da matriz). Sem nada marcado, a lista não aparece.
   # O nome de cada caráter é um link para o verbete dele no glossário.
@@ -723,7 +713,7 @@ server <- function(input, output, session) {
       tags$li(HTML(link_glossario(paste0("glo", i[k]), nomes[k])), marcados[k])
     }))
   })
-  
+
   # Táxons restantes: tabela sem cabeçalho nem bordas, em até 5 colunas,
   # nomes em itálico e em ordem alfabética (como no app do monographaR).
   # Cada nome é um link para a descrição do táxon.
@@ -735,14 +725,14 @@ server <- function(input, output, session) {
     tab[seq_along(nomes)] <- link_taxon(nomes)
     tab
   }, colnames = FALSE, bordered = FALSE, sanitize.text.function = function(x) x)
-  
+
   # Clique no nome de um táxon: escolhe esse táxon na aba "Táxons" e muda
   # para ela. As caixas marcadas na chave interativa continuam.
   observeEvent(input$ver_taxon, {
     updateSelectInput(session, "taxon", selected = input$ver_taxon)
     updateTabsetPanel(session, "abas", selected = "Táxons")
   })
-  
+
   # Link para a página do táxon no WoRMS (World Register of Marine
   # Species); abre em outra janela do navegador.
   output$link_worms <- renderUI({
@@ -753,7 +743,7 @@ server <- function(input, output, session) {
     p(tags$a(href = endereco, target = "_blank",
              "WoRMS:", em(tax$nome_worms[k]), tax$autoridade[k]))
   })
-  
+
   # Ficha do táxon (lado direito da aba): figura, legenda e descrição em
   # português, com links para a aba Referências. Figuras em www/taxons.
   output$ficha <- renderUI({
@@ -780,7 +770,7 @@ server <- function(input, output, session) {
                                   HTML(formatar_ficha(tax$aviso[k])))
     )
   })
-  
+
   # Descrição do táxon: abre em uma janela popup a tabela com o estado de
   # cada caráter. O nome de cada caráter é um link para o glossário; ao
   # clicar nele, a janela fecha e o glossário abre no verbete.
@@ -791,7 +781,7 @@ server <- function(input, output, session) {
       size = "l", footer = modalButton("Fechar"), easyClose = TRUE
     ))
   })
-  
+
   output$descricao <- renderTable({
     est <- mat[, input$taxon]
     est[is.na(est)] <- "não informado"
@@ -803,7 +793,7 @@ server <- function(input, output, session) {
     names(tab) <- c("Grupo", "Caráter", "Estado")
     tab
   }, sanitize.text.function = function(x) x)
-  
+
   # Clique em "Prancha N" ou em uma miniatura: abre a prancha em uma
   # janela popup, com a imagem em tamanho real, a legenda e o crédito.
   observeEvent(input$ver_prancha, {
@@ -820,19 +810,19 @@ server <- function(input, output, session) {
       size = "l", footer = modalButton("Fechar"), easyClose = TRUE
     ))
   })
-  
+
   output$matriz <- renderTable({
     tab <- data.frame(grupo, carater, mat, check.names = FALSE, stringsAsFactors = FALSE)
     names(tab)[1:2] <- c("Grupo", "Caráter")
     tab
   }, na = "")
-  
+
   # Botão da aba Matriz: entrega o próprio arquivo lido pelo app
   output$baixar_matriz <- downloadHandler(
     filename = "matriz_lumbrineridae.csv",
     content = function(file) file.copy("matriz_lumbrineridae.csv", file)
   )
-  
+
   # Botão Recomeçar: desmarca todas as caixas
   observeEvent(input$recomecar, {
     for (id in ids) updateCheckboxGroupInput(session, id, selected = character(0))
