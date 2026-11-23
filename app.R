@@ -171,6 +171,26 @@ estilo_arvore <- "
   .arvore details:has(input:checked) > summary::after { content: ' \\2713'; color: #2a9d5c; }
 "
 
+# Aba Chave interativa: árvore à esquerda (largura fixa) e táxons à direita
+# (o resto). "sticky" mantém os táxons à vista enquanto se rola a árvore.
+# A grade ci-lista põe quantas colunas couberem, com no mínimo 180 px cada.
+# Só em telas muito estreitas (celular) os painéis se empilham, e então a
+# lista de táxons vem primeiro (column-reverse), para não sumir sob a árvore.
+estilo_chave_interativa <- "
+  .ci-linha { display: flex; gap: 20px; align-items: flex-start; margin-top: 10px; }
+  .ci-arvore { flex: 0 0 320px; margin-bottom: 0; }
+  .ci-taxons { flex: 1 1 auto; min-width: 0; position: sticky; top: 10px;
+               max-height: 95vh; overflow-y: auto; }
+  .ci-taxons h2 { margin-top: 0; }
+  .ci-lista { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+              gap: 6px 20px; margin-top: 12px; padding-top: 10px; border-top: 1px solid #ddd; }
+  @media (max-width: 600px) {
+    .ci-linha { flex-direction: column-reverse; align-items: stretch; }
+    .ci-arvore { flex: none; }
+    .ci-taxons { position: static; max-height: none; }
+  }
+"
+
 # Glossário: um bloco (verbete) por caráter, na mesma ordem da árvore.
 # Cada parte do verbete só aparece se a coluna correspondente estiver
 # preenchida no glossario.csv.
@@ -551,6 +571,7 @@ script_chave <- "
 
 ui <- fluidPage(
   tags$head(tags$style(HTML(estilo_arvore)),
+            tags$style(HTML(estilo_chave_interativa)),
             tags$style(HTML(estilo_glossario)),
             tags$style(id = "estilo-chave", HTML(estilo_chave)),
             tags$script(HTML(script_glossario)),
@@ -558,22 +579,22 @@ ui <- fluidPage(
   titlePanel("Chave interativa de Lumbrineridae (Polychaeta) da Bacia de Pelotas"),
   tabsetPanel(id = "abas",        # o id permite trocar de aba pelo servidor
     tabPanel("Chave interativa",
-      sidebarLayout(
-        sidebarPanel(
+      # Dois painéis lado a lado (classes em estilo_chave_interativa): à
+      # esquerda a árvore de caracteres, à direita os táxons restantes.
+      # Não se usa o sidebarLayout() porque ele empilha os painéis em janelas
+      # estreitas e a lista de táxons some para baixo da árvore.
+      div(class = "ci-linha",
+        div(class = "well ci-arvore",
           actionButton("recomecar", "Recomeçar"),
           helpText("Marque o grupo, o caráter e os estados, em qualquer ordem."),
           div(class = "arvore", lapply(unique(grupo), ramo_grupo))
         ),
-        mainPanel(
-          # "sticky" mantém o resultado à vista enquanto se rola a lista de caracteres
-          div(style = "position: sticky; top: 10px; max-height: 95vh; overflow-y: auto;",
-            h2("Táxons"),
-            textOutput("n_taxons"),
-            textOutput("n_caracteres"),
-            uiOutput("lista_caracteres"),
-            br(),
-            tableOutput("restantes")
-          )
+        div(class = "ci-taxons",
+          h2("Táxons"),
+          textOutput("n_taxons"),
+          textOutput("n_caracteres"),
+          uiOutput("lista_caracteres"),
+          uiOutput("restantes")
         )
       )
     ),
@@ -709,17 +730,14 @@ server <- function(input, output, session) {
     }))
   })
 
-  # Táxons restantes: tabela sem cabeçalho nem bordas, em até 5 colunas,
-  # nomes em itálico e em ordem alfabética (como no app do monographaR).
+  # Táxons restantes: nomes em itálico e em ordem alfabética, numa grade
+  # cujo número de colunas se ajusta à largura da janela (classe ci-lista).
   # Cada nome é um link para a descrição do táxon.
-  output$restantes <- renderTable({
+  output$restantes <- renderUI({
     nomes <- sort(taxons[resta()])
     if (length(nomes) == 0) return(NULL)
-    n_col <- 5
-    tab <- matrix("", nrow = ceiling(length(nomes) / n_col), ncol = n_col)
-    tab[seq_along(nomes)] <- link_taxon(nomes)
-    tab
-  }, colnames = FALSE, bordered = FALSE, sanitize.text.function = function(x) x)
+    div(class = "ci-lista", lapply(link_taxon(nomes), function(x) div(HTML(x))))
+  })
 
   # Clique no nome de um táxon: escolhe esse táxon na aba "Táxons" e muda
   # para ela. As caixas marcadas na chave interativa continuam.
