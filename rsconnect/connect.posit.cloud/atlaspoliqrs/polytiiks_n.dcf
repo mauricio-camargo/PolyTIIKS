@@ -7,7 +7,7 @@ hostUrl: https://api.connect.posit.cloud/v1
 appId: 01a1fbc9-5248-c5ad-57f1-4d433495e4bb
 appGuid:
 bundleId:
-url:
+url: https://connect.posit.cloud/atlaspoliqrs/content/01a1fbc9-5248-c5ad-57f1-4d433495e4bb
 version: 1
 asMultiple: FALSE
 asStatic: FALSE
