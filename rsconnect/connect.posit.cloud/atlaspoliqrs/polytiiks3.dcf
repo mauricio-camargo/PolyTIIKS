@@ -1,0 +1,13 @@
+name: polytiiks3
+title: PolyTIIKS
+username: atlaspoliqrs
+account: atlaspoliqrs
+server: connect.posit.cloud
+hostUrl: https://api.connect.posit.cloud/v1
+appId: 01a20902-d3ff-c7d7-3e0f-4be433c2e5ad
+appGuid:
+bundleId:
+url: https://connect.posit.cloud/atlaspoliqrs/content/01a20902-d3ff-c7d7-3e0f-4be433c2e5ad
+version: 1
+asMultiple: FALSE
+asStatic: FALSE

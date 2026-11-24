@@ -444,8 +444,7 @@ distico_chave <- function(n) {
 intro_chave <- paste(
   "Chave para os 14 táxons de Lumbrineridae da lista do projeto PolyTIIKS. Foi montada",
   "a partir da matriz de caracteres usada na chave interativa",
-  "(<code>matriz_lumbrineridae.csv</code>, versão com o preenchimento de 16/11/2026 e a",
-  "correção de 19/11/2026) e das descrições de <code>taxons.csv</code>. Cada dístico usa",
+  "Cada dístico usa",
   "um caráter principal, em primeiro lugar, e caracteres de reforço em seguida. Os",
   "caracteres de mais fácil observação (ganchos, brânquias, prostômio) vêm antes; as",
   "maxilas ficam para o fim ou como reforço.")
