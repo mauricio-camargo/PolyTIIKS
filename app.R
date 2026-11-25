@@ -672,7 +672,7 @@ ui <- fluidPage(
         HTML("(<a href='https://www.instagram.com/bentosfurg/' target='_blank'>@bentosfurg</a>).")),
       p("A chave foi inspirada no pacote", tags$i("monographaR"), "(Reginato 2016) e adere",
         "ao mesmo formato de planilha."),
-      p("São", n_tax, "táxons e", n_car, "caracteres."),
+      p("A matriz original contém", n_tax, "táxons e", n_car, "caracteres."),
       p("O glossário foi compilado da literatura listada na aba Referências.",
         "As figuras podem vir de artigos de acesso aberto (licença CC BY 4.0),",
         "de revistas que permitem a reprodução com citação da fonte ou ser",
