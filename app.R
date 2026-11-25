@@ -670,7 +670,7 @@ ui <- fluidPage(
         "como parte do projeto PolyTIIKS (Polychaeta Taxonomic Interactive Identification Keys",
         "in Shiny), do Laboratório de Ecologia de Invertebrados Bentônicos",
         HTML("(<a href='https://www.instagram.com/bentosfurg/' target='_blank'>@bentosfurg</a>).")),
-      p("A chave foi inspirada no pacote <i>monographaR</i> (Reginato 2016) e adere",
+      p("A chave foi inspirada no pacote", tags$i("monographaR"), "(Reginato 2016) e adere",
         "ao mesmo formato de planilha."),
       p("São", n_tax, "táxons e", n_car, "caracteres."),
       p("O glossário foi compilado da literatura listada na aba Referências.",
