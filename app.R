@@ -359,7 +359,7 @@ formatar_ficha <- function(x) {
 caminhos <- data.frame(etapa = c(
   "Abertura do projeto.",
   "Planilha de partida.",
-  "Primeiro pedido.",
+  "Primeira ação.",
   "Levantamento bibliográfico.",
   "Busca das referências.",
   "Matriz de táxons × caracteres.",
