@@ -663,7 +663,7 @@ ui <- fluidPage(
     ),
     tabPanel("Sobre",
       h4("Sobre esta chave"),
-      p("Autores: Maurício Garcia de Camargo, Raphael Pinotti e Mariana F. Lisboa"),
+      p("Autores: Maurício Camargo, Raphael Pinotti e Mariana Lisboa"),
       p("Esta é uma chave politômica interativa de múltiplo acesso para as",
         "espécies da família Lumbrineridae registradas na Bacia de Pelotas,",
         "criada em R-shiny com a assistência de IA pelo modelo Fable 5.2 da Anthropic,",
