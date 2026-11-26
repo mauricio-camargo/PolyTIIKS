@@ -4,7 +4,7 @@ Chave de identificação interativa, de múltiplo acesso, para os Lumbrineridae
 (Annelida, Polychaeta) registrados na Bacia de Pelotas, inspirada no Intkey (sistema
 DELTA). Feita em R-base, com o pacote `shiny` como única dependência.
 
-Parte do Trabalho de Conclusão de Curso de Mariana Lisboa, orientado por Maurício
+Parte do Trabalho de Conclusão de Curso de Mariana F. Lisboa, orientado por Maurício
 Garcia de Camargo (Instituto de Oceanografia, FURG).
 
 ## Como rodar
