@@ -8,7 +8,7 @@
 #                             (em www/taxons), legenda, descrição e aviso
 #   glossario.csv             um verbete por caráter
 #   pranchas.csv              figuras do glossário, com créditos
-#   chave_dicotomica.csv      chave dicotômica (aba Chave linear), um lead
+#   chave_dicotomica.csv      chave dicotômica (aba Chave dicotômica), um lead
 #                             por linha
 # =====================================================================
 
@@ -55,7 +55,7 @@ pr  <- read.csv("pranchas.csv",  fileEncoding = "UTF-8", colClasses = "character
 # Linha do glossário que corresponde a cada caráter da matriz (NA = sem verbete)
 lin_glo <- match(rotulo, paste(glo$Group, glo$Character, sep = ": "))
 
-# Chave dicotômica (aba Chave linear). Um lead (metade de um dístico) por linha:
+# Chave dicotômica (aba Chave dicotômica). Um lead (metade de um dístico) por linha:
 #   distico  número do dístico e letra do lead (1a, 1b, 2a...)
 #   texto    caracteres do lead (aceita *Nome* em itálico)
 #   destino  número do dístico seguinte ou nome do táxon
@@ -402,7 +402,7 @@ caminhos <- data.frame(etapa = c(
 ), stringsAsFactors = FALSE)
 
 # ---------------------------------------------------------------------
-# Aba Chave linear: a chave dicotômica, com aparência de página impressa.
+# Aba Chave dicotômica: a chave dicotômica, com aparência de página impressa.
 # Cada lead ocupa uma linha da grade: número do dístico | texto, com uma
 # linha pontilhada até a margem | destino.
 # ---------------------------------------------------------------------
@@ -581,7 +581,7 @@ ui <- fluidPage(
         )
       )
     ),
-    tabPanel("Chave linear",
+    tabPanel("Chave dicotômica",
       div(class = "ch-barra",
         tags$button(type = "button", class = "btn btn-default", onclick = "imprimirChave()",
                     "Imprimir ou salvar em PDF")),

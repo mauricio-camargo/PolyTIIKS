@@ -33,7 +33,7 @@ source("baixar_pranchas.R")
 - **Chave interativa:** os caracteres ficam numa árvore (grupo, caráter, estados) e podem
   ser usados em qualquer ordem. A lista de táxons restantes é atualizada a cada
   escolha, e cada nome leva à aba Táxons.
-- **Chave linear:** chave dicotômica tradicional, com 13 dísticos, tirada da matriz e
+- **Chave dicotômica:** chave tradicional, com 13 dísticos, tirada da matriz e
   conferida táxon a táxon contra ela. Os destinos são links (para o dístico seguinte ou
   para a ficha do táxon), e um botão imprime a chave ou a salva em PDF.
 - **Táxons:** link para o WoRMS, descrição do táxon (estados dos caracteres, numa janela
@@ -56,7 +56,7 @@ desconhecido) não elimina o táxon, e dois estados marcados no mesmo caráter v
 | `taxons.csv` | um táxon por linha, com o número no WoRMS (AphiaID) |
 | `glossario.csv` | um verbete por caráter |
 | `pranchas.csv` | figuras do glossário, com créditos e licenças |
-| `chave_dicotomica.csv` | chave dicotômica da aba Chave linear, um lead por linha |
+| `chave_dicotomica.csv` | conteúdo da aba Chave dicotômica, um lead por linha |
 | `baixar_pranchas.R` | opcional: baixa as figuras para a pasta `www/pranchas` |
 | `docs/matriz-preenchimento-por-diagnose.md` | origem de cada célula preenchida na matriz |
 
