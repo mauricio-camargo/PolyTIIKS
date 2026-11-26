@@ -373,7 +373,7 @@ caminhos <- data.frame(etapa = c(
   "Criar o projeto PolyTIIKS (Polychaeta Taxonomic Interactive Identification Keys in Shiny), começando por Lumbrineridae e expansível para outras famílias.",
   "Inserir no projeto a planilha do checklist de poliquetas da Bacia de Pelotas, anexada em xlsx.",
   "Listar as espécies de Lumbrineridae da planilha: 14 táxons, sendo 13 espécies e um táxon identificado só até gênero (*Abyssoninoe* sp.).",
-  "Listar a bibliografia existente sobre os 14 táxons: descrições originais, redescrições, revisões da família e guias de identificação.",
+  "Listar, por meio de deep research, a bibliografia existente sobre os 14 táxons: descrições originais, redescrições, revisões da família e guias de identificação, incluindo também a literatura cinza (teses, dissertações e relatórios).",
   "Localizar as 13 referências citadas, em versão digital.",
   paste("Montar a planilha de táxons × caracteres no formato do pacote *monographaR*",
         "(Reginato 2016): 24 caracteres organizados em grupos, com estados separados",
