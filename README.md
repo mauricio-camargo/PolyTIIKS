@@ -5,7 +5,7 @@ Chave de identificação interativa, de múltiplo acesso, para os Lumbrineridae
 DELTA). Feita em R-base, com o pacote `shiny` como única dependência.
 
 Parte do Trabalho de Conclusão de Curso de Mariana Lisboa, orientado por Maurício
-Camargo (Instituto de Oceanografia, FURG).
+Garcia de Camargo (Instituto de Oceanografia, FURG).
 
 ## Como rodar
 
