@@ -553,13 +553,36 @@ script_chave <- "
   }
 "
 
+# ---------------------------------------------------------------------
+# Cabeçalho do app: sigla do projeto, nome por extenso (com as letras
+# que formam a sigla em destaque) e, abaixo, o título desta chave.
+# ---------------------------------------------------------------------
+estilo_cabecalho <- "
+  .cabecalho { border-bottom: 3px solid #1f5f8b; padding: 16px 0 10px; margin-bottom: 14px; }
+  .cab-projeto { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 14px; }
+  .cab-sigla { font-size: 36px; font-weight: bold; color: #1f5f8b; letter-spacing: 1px; }
+  .cab-extenso { font-size: 16px; color: #666; }
+  .cab-extenso b { color: #1f5f8b; }
+  .cabecalho h2 { margin: 6px 0 0; font-size: 22px; color: #333; }
+"
+
+cabecalho <- div(class = "cabecalho",
+  div(class = "cab-projeto",
+    span(class = "cab-sigla", "PolyTIIKS"),
+    span(class = "cab-extenso",
+         HTML("<b>Poly</b>chaeta <b>T</b>axonomic <b>I</b>nteractive <b>I</b>dentification <b>K</b>eys in <b>S</b>hiny"))),
+  h2("Chave interativa de Lumbrineridae (Polychaeta) da Bacia de Pelotas")
+)
+
 ui <- fluidPage(
+  title = "PolyTIIKS – Lumbrineridae da Bacia de Pelotas",
   tags$head(tags$style(HTML(estilo_arvore)),
             tags$style(HTML(estilo_glossario)),
+            tags$style(HTML(estilo_cabecalho)),
             tags$style(id = "estilo-chave", HTML(estilo_chave)),
             tags$script(HTML(script_glossario)),
             tags$script(HTML(script_chave))),
-  titlePanel("Chave interativa de Lumbrineridae (Polychaeta) da Bacia de Pelotas"),
+  cabecalho,
   tabsetPanel(id = "abas",        # o id permite trocar de aba pelo servidor
     tabPanel("Chave interativa",
       sidebarLayout(
