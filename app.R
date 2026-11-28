@@ -676,7 +676,7 @@ ui <- fluidPage(
       p("O glossário foi compilado da literatura listada na aba Referências.",
         "As figuras podem vir de artigos de acesso aberto (licença CC BY 4.0),",
         "de revistas que permitem a reprodução com citação da fonte ou ser",
-        "fornecidas pelo autor. O crédito de cada uma está junto da prancha. oiê")
+        "fornecidas pelo autor. O crédito de cada uma está junto da prancha.")
     )
   )
 )
