@@ -672,7 +672,8 @@ ui <- fluidPage(
         HTML("(<a href='https://www.instagram.com/bentosfurg/' target='_blank'>@bentosfurg</a>).")),
       p("A chave foi inspirada no pacote", tags$i("monographaR"), "(Reginato 2016)."),
       p("A matriz original contém", n_tax, "táxons e", n_car, "caracteres."),
-      p("O glossário foi compilado da literatura listada na aba Referências.",
+      p("O glossário foi compilado da literatura listada na aba",
+        HTML(paste0(as.character(actionLink("ir_referencias", "Referências")), ".")),  # ponto colado ao link
         "As figuras podem vir de artigos de acesso aberto (licença CC BY 4.0),",
         "de revistas que permitem a reprodução com citação da fonte ou ser",
         "fornecidas pelo autor. O crédito de cada uma está junto da prancha.")
@@ -729,6 +730,11 @@ server <- function(input, output, session) {
   observeEvent(input$ver_taxon, {
     updateSelectInput(session, "taxon", selected = input$ver_taxon)
     updateTabsetPanel(session, "abas", selected = "Táxons")
+  })
+
+  # Link "Referências" do texto da aba Sobre: muda para a aba Referências.
+  observeEvent(input$ir_referencias, {
+    updateTabsetPanel(session, "abas", selected = "Referências")
   })
 
   # Link para a página do táxon no WoRMS (World Register of Marine
