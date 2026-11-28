@@ -390,7 +390,7 @@ caminhos <- data.frame(etapa = c(
         "caráter."),
   paste("Escrever um verbete para cada um dos 24 caracteres (definição, estados, como",
         "observar, cuidados e fontes), ilustrado por 6 pranchas retiradas da literatura,",
-        "com os créditos. O modelo leu as",
+        "com os créditos. A IA leu as",
         "descrições, redescrições e guias, cruzou as informações das 13 diferentes fontes e",
         "redigiu os verbetes citando cada uma delas."),
   paste("Ligar cada referência ao PDF ou à página da obra (revista, BioStor,",
