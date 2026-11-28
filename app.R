@@ -559,8 +559,8 @@ script_chave <- "
 # ---------------------------------------------------------------------
 estilo_cabecalho <- "
   .cabecalho { border-bottom: 3px solid #1f5f8b; padding: 16px 0 10px; margin-bottom: 14px; }
-  .cab-projeto { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 14px; }
-  .cab-sigla { font-size: 36px; font-weight: bold; color: #1f5f8b; letter-spacing: 1px; }
+  .cab-projeto { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: center; gap: 2px 14px; }
+  .cab-sigla { font-size: 28px; font-weight: bold; color: #1f5f8b; letter-spacing: 1px; }
   .cab-extenso { font-size: 16px; color: #666; }
   .cab-extenso b { color: #1f5f8b; }
   .cabecalho h2 { margin: 6px 0 0; font-size: 22px; color: #333; }
