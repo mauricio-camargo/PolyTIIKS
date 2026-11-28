@@ -571,7 +571,7 @@ cabecalho <- div(class = "cabecalho",
     span(class = "cab-sigla", "PolyTIIKS"),
     span(class = "cab-extenso",
          HTML("<b>Poly</b>chaeta <b>T</b>axonomic <b>I</b>nteractive <b>I</b>dentification <b>K</b>eys in <b>S</b>hiny"))),
-  h2("Chave interativa de Lumbrineridae (Polychaeta) da Bacia de Pelotas")
+  h2("1. Chave interativa de Lumbrineridae (Polychaeta) da Bacia de Pelotas")
 )
 
 ui <- fluidPage(
